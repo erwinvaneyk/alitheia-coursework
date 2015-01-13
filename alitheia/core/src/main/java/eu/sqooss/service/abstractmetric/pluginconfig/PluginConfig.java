@@ -2,8 +2,8 @@
  * This file is part of the Alitheia system, developed by the SQO-OSS
  * consortium as part of the IST FP6 SQO-OSS project, number 033331.
  *
- * Copyright 2010 - Organization for Free and Open Source Software,  
- *                 Athens, Greece.
+ * Copyright 2007 - 2010 - Organization for Free and Open Source Software,  
+ *                Athens, Greece.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,30 +30,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package eu.sqooss.service.abstractmetric;
 
-import java.util.HashSet;
+package eu.sqooss.service.abstractmetric.pluginconfig;
+
+import java.util.Hashtable;
 import java.util.Set;
 
-import javax.tools.Diagnostic.Kind;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.lang.model.element.TypeElement;
+/**
+ * MetricConfig defines a default interface for classes that stores the
+ *  configuration set of a single unnamed metric.
+ */
+public interface PluginConfig {
 
-//@SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedAnnotationTypes("eu.sqooss.service.abstractmetric.*")
-public class PluginAnnotationProcessor extends AbstractProcessor {
-	Set<String> declActivators = new HashSet<String>();
+    /************************************************************************
+     * OBLIGATORY CONFIGURATION KEYS
+     */ 
+    public static final String KEY_AUTOINSTALL =
+        "autoinstall";
 
-	@Override
-    public void init(ProcessingEnvironment pe) {
-        super.init(pe);
-    }
-	
-	@Override
-	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-		return true;
-	}
+    /**
+     * Gets the complete metric's configuration set.
+     * 
+     * @return the configuration set
+     */
+    public Hashtable<String, String> getConfiguration();
+
+    public boolean containsKey(String value);
+
+    public Set<String> keySet();
+
+    public String getString(String key);
+
+    public byte[] getByteArray(String key);
+
+    public String[] getStringArray(String key);
+
 }
+
+//vi: ai nosi sw=4 ts=4 expandtab

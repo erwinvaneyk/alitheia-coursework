@@ -31,7 +31,7 @@
  *
  */
 
-package eu.sqooss.service.pa;
+package eu.sqooss.service.abstractmetric.pluginconfig;
 
 import java.util.HashMap;
 

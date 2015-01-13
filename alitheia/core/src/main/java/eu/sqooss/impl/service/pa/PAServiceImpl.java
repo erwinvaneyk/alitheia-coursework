@@ -56,8 +56,8 @@ import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
 import eu.sqooss.service.logging.Logger;
-import eu.sqooss.service.pa.PluginAdmin;
-import eu.sqooss.service.pa.PluginInfo;
+import eu.sqooss.service.abstractmetric.PluginAdmin;
+import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
 import eu.sqooss.service.scheduler.SchedulerException;
@@ -421,14 +421,14 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
 /* ===[ Implementation of the PluginAdmin interface ]===================== */
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#listPlugins()
+     * @see PluginAdmin#listPlugins()
      */
     public Collection<PluginInfo> listPlugins() {
         return registeredPlugins.values();
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#installPlugin(java.lang.String)
+     * @see PluginAdmin#installPlugin(java.lang.String)
      */
     public boolean installPlugin(String hash) {
         Long sid = getServiceId(hash);
@@ -439,7 +439,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#installPlugin(java.lang.Long)
+     * @see PluginAdmin#installPlugin(java.lang.Long)
      */
     public boolean installPlugin(Long serviceID) {
         logger.info (
@@ -490,7 +490,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#uninstallPlugin(java.lang.String)
+     * @see PluginAdmin#uninstallPlugin(java.lang.String)
      */
     public boolean uninstallPlugin(String hash) {
         Long sid = getServiceId(hash);
@@ -501,7 +501,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#uninstallPlugin(java.lang.Long)
+     * @see PluginAdmin#uninstallPlugin(java.lang.Long)
      */
     public boolean uninstallPlugin(Long serviceID) {
         Scheduler s = AlitheiaCore.getInstance().getScheduler();
@@ -556,7 +556,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#getPlugin(eu.sqooss.service.pa.PluginInfo)
+     * @see PluginAdmin#getPlugin(PluginInfo)
      */
     public AlitheiaPlugin getPlugin(PluginInfo pluginInfo) {
         if (pluginInfo != null) {

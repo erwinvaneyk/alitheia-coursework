@@ -30,48 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package eu.sqooss.service.abstractmetric;
+package eu.sqooss.service.abstractmetric.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.HashSet;
+import java.util.Set;
 
-import eu.sqooss.service.db.DAObject;
+import javax.tools.Diagnostic.Kind;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.element.TypeElement;
 
-/**
- * Declares a new Metric along with an activation type and a short description.
- * At compile time, the annotation is used to check whether a run() and
- * getResult() methods have been defined for each different activation type. At
- * runtime, it is used to automatically get metric declarations from the
- * annotated metric plug-in. 
- *  
- * @author Georgios Gousios <gousiosg@gmail.com>
- * @see eu.sqooss.service.abstractmetric.MetricDeclarations
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface MetricDecl {
+//@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes("eu.sqooss.service.abstractmetric.annotations.*")
+public class PluginAnnotationProcessor extends AbstractProcessor {
+	Set<String> declActivators = new HashSet<String>();
 
-	/**
-	 * The metric mnemonic, an (up to) 10 char String.
-	 */
-	String mnemonic();
+	@Override
+    public void init(ProcessingEnvironment pe) {
+        super.init(pe);
+    }
 	
-	/**
-	 * The metric description, a free form String.
-	 */
-	String descr();
-	
-    /**
-     * A list of object types whose changes can activate the metric. By
-     * convention, the first entry is the entity to which the metric results are
-     * bound to.
-     */
-    Class<? extends DAObject>[] activators();
-	
-	/**
-	 * A list of metrics that this metric depends upon.
-	 */
-	String[] dependencies() default {};
+	@Override
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+		return true;
+	}
 }

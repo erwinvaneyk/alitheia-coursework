@@ -60,7 +60,7 @@ import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.fds.FDSService;
 import eu.sqooss.service.logging.LogManager;
 import eu.sqooss.service.metricactivator.MetricActivator;
-import eu.sqooss.service.pa.PluginAdmin;
+import eu.sqooss.service.abstractmetric.PluginAdmin;
 import eu.sqooss.service.rest.RestService;
 import eu.sqooss.service.scheduler.Scheduler;
 import eu.sqooss.service.tds.TDSService;

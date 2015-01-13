@@ -31,7 +31,7 @@
  *
  */
 
-package eu.sqooss.service.abstractmetric;
+package eu.sqooss.service.abstractmetric.annotations;
 
 import eu.sqooss.service.db.Bug;
 import eu.sqooss.service.db.DAObject;
@@ -49,7 +49,6 @@ import eu.sqooss.service.db.StoredProject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static eu.sqooss.service.abstractmetric.InvocationOrder.OLDFIRST;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -96,6 +95,6 @@ public @interface SchedulerHints {
      * The order of resources by which the metrics should be run.
      * This is a best effort approach
      */
-    public InvocationOrder invocationOrder() default OLDFIRST;
+    public InvocationOrder invocationOrder() default InvocationOrder.OLDFIRST;
 }
 
