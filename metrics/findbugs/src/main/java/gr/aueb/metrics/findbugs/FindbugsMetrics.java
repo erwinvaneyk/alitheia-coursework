@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.service.abstractmetric.*;
+import eu.sqooss.service.abstractmetric.annotations.*;
 import eu.sqooss.service.db.*;
 import eu.sqooss.service.fds.CheckoutException;
 import eu.sqooss.service.fds.FDSService;
