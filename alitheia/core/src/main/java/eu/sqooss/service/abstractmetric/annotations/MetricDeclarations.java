@@ -1,6 +1,9 @@
 /*
- * Copyright 2012 - Organization for Free and Open Source Software,
- *                Athens, Greece.
+ * This file is part of the Alitheia system, developed by the SQO-OSS
+ * consortium as part of the IST FP6 SQO-OSS project, number 033331.
+ *
+ * Copyright 2008 - 2010 - Organization for Free and Open Source Software,  
+ *                 Athens, Greece.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -27,20 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+package eu.sqooss.service.abstractmetric.annotations;
 
-package eu.sqooss.service.abstractmetric;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Hints to the metric activator on the ordering of the resource
- * version to be used.
+ * 
+ * A container type for metric declarations.
+ * 
+ * @author Georgios Gousios <gousiosg@gmail.com>
+ * @see  MetricDecl
  */
-public enum InvocationOrder {
-    /**Old entries first*/
-    OLDFIRST,
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface MetricDeclarations {
 
-    /**New entries first*/
-    NEWFIRST,
-
-    /**Randomized ordering*/
-    RANDOM
+	/**
+	 * List of declared metrics.
+	 */
+	MetricDecl[] metrics() default {};
 }

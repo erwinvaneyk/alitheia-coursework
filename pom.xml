@@ -49,21 +49,19 @@
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
 
     <!-- MySQL and HSQLDB supported out of the box. Uncomment one of the sections below -->
-    <!-- MySQL 
     <eu.sqooss.db>MySQL</eu.sqooss.db>
     <eu.sqooss.db.host>localhost</eu.sqooss.db.host>
     <eu.sqooss.db.schema>alitheia</eu.sqooss.db.schema>
     <eu.sqooss.db.user>alitheia</eu.sqooss.db.user>
     <eu.sqooss.db.passwd>alitheia</eu.sqooss.db.passwd>
     <eu.sqooss.db.conpool>c3p0</eu.sqooss.db.conpool>
-    -->   
     
-    <eu.sqooss.db>H2</eu.sqooss.db>
+    <!--<eu.sqooss.db>H2</eu.sqooss.db>
     <eu.sqooss.db.host>localhost</eu.sqooss.db.host>
     <eu.sqooss.db.schema>alitheia;LOCK_MODE=3;MULTI_THREADED=true</eu.sqooss.db.schema>
     <eu.sqooss.db.user>sa</eu.sqooss.db.user>
     <eu.sqooss.db.passwd></eu.sqooss.db.passwd>
-    <eu.sqooss.db.conpool>c3p0</eu.sqooss.db.conpool>
+    <eu.sqooss.db.conpool>c3p0</eu.sqooss.db.conpool> -->
     <eu.sqooss.updater.svn.ommitfileless>true</eu.sqooss.updater.svn.ommitfileless>
     <eu.sqooss.updater.svn.handlecopies>branches</eu.sqooss.updater.svn.handlecopies>
     
@@ -212,7 +210,6 @@
   	<profile>
       <id>skiptests</id>
       <activation>
-      	<activeByDefault>true</activeByDefault>
       	<property>
           <name>tests</name>
           <value>0</value>
@@ -234,6 +231,7 @@
     <profile>
       <id>runtests</id>
       <activation>
+          <activeByDefault>true</activeByDefault>
       	<property>
           <name>tests</name>
           <value>1</value>

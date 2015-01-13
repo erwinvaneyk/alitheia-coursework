@@ -1,7 +1,5 @@
 /*
- * This file is part of the Alitheia system.
- *
- * Copyright 2010 - Organization for Free and Open Source Software,  
+ * Copyright 2012 - Organization for Free and Open Source Software,
  *                Athens, Greece.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,45 +28,19 @@
  *
  */
 
-package eu.sqooss.service.tds;
-
-import eu.sqooss.impl.service.tds.diff.UnifiedDiffParser;
+package eu.sqooss.service.abstractmetric.annotations;
 
 /**
- * Class that knows how to parse different diff formats.
- * 
- * @author Georgios Gousios <gousiosg@gmail.com>
- *
+ * Hints to the metric activator on the ordering of the resource
+ * version to be used.
  */
-public class DiffFactory {
+public enum InvocationOrder {
+    /**Old entries first*/
+    OLDFIRST,
 
-    private static DiffFactory instance;
-       
-    public static DiffFactory getInstance() {
-        if (instance == null)
-            instance = new DiffFactory();
-        
-        return instance;
-    }
-    
-    /**
-     * 
-     * 
-     * @param start
-     * @param end
-     * @param basePath
-     * @param diff
-     * @return A {@link Diff} object if parsing the diff succeded or null if parsing failed.
-     * 
-     * @see {@link http://en.wikipedia.org/wiki/Diff#Unified_format}
-     */
-    public Diff doUnifiedDiff(Revision start, Revision end, 
-            String basePath, String diff) {
-        
-        UnifiedDiffParser d = new UnifiedDiffParser(start, end, basePath, diff);
-        if (d.parseDiff())
-            return d;
-        
-        return null;
-    }
+    /**New entries first*/
+    NEWFIRST,
+
+    /**Randomized ordering*/
+    RANDOM
 }

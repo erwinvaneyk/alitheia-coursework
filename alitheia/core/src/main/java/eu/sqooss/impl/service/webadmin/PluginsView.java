@@ -47,8 +47,8 @@ import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
-import eu.sqooss.service.pa.PluginInfo;
-import eu.sqooss.service.pa.PluginInfo.ConfigurationType;
+import eu.sqooss.service.abstractmetric.PluginInfo;
+import eu.sqooss.service.abstractmetric.ConfigurationType;
 import eu.sqooss.service.util.StringUtils;
 
 public class PluginsView extends AbstractView{
@@ -188,7 +188,7 @@ public class PluginsView extends AbstractView{
                     selPI = sobjPA.getPluginInfo(reqValHashcode);
                 }
                 // Plug-in info based actions
-                if ((selPI != null) && (selPI.installed)) {
+                if ((selPI != null) && (selPI.isInstalled())) {
                     // =======================================================
                     // Plug-in synchronize (on all projects) request
                     // =======================================================
@@ -203,7 +203,6 @@ public class PluginsView extends AbstractView{
                                 reqValPropName, reqValPropType)) {
                             try {
                                 if (selPI.removeConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropType)) {
                                     // Update the Plug-in Admin's information
@@ -242,7 +241,6 @@ public class PluginsView extends AbstractView{
                         if (update) {
                             try {
                                 if (selPI.updateConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropValue)) {
                                     // Update the Plug-in Admin's information
@@ -266,7 +264,6 @@ public class PluginsView extends AbstractView{
                         else {
                             try {
                                 if (selPI.addConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropDescr,
                                         reqValPropType,
@@ -313,7 +310,7 @@ public class PluginsView extends AbstractView{
             // ===============================================================
             // "Create/update configuration property" editor
             // ===============================================================
-            if ((selPI != null) && (selPI.installed)
+            if ((selPI != null) && (selPI.isInstalled())
                     && ((reqValAction.equals(actValReqAddProp))
                             || (reqValAction.equals(actValReqUpdProp)))) {
                 // Input field values are stored here
@@ -484,7 +481,7 @@ public class PluginsView extends AbstractView{
                 b.append(sp(in++) + "<tr>\n");
                 // Plug-in state
                 b.append(sp(++in) + "<td>"
-                        + ((selPI.installed) 
+                        + ((selPI.isInstalled())
                                 ? "Installed" : "Registered")
                                 + "</td>\n");
                 // Plug-in name
@@ -512,7 +509,7 @@ public class PluginsView extends AbstractView{
                         + reqParHashcode + "').value='';"
                         + "document.metrics.submit();\""
                         + ">\n");
-                if (selPI.installed) {
+                if (selPI.isInstalled()) {
                     b.append(sp(in) + "<input type=\"button\""
                             + " class=\"install\""
                             + " style=\"width: 100px;\""
@@ -564,7 +561,7 @@ public class PluginsView extends AbstractView{
                 //------------------------------------------------------------
                 // Registered metrics, activators and configuration 
                 //------------------------------------------------------------
-                if (selPI.installed) {
+                if (selPI.isInstalled()) {
                     //--------------------------------------------------------
                     // Create the metrics field-set
                     //--------------------------------------------------------
@@ -758,7 +755,7 @@ public class PluginsView extends AbstractView{
                 // Display not-installed plug-ins first
                 //------------------------------------------------------------
                 for(PluginInfo i : l) {
-                    if (i.installed == false) {
+                    if (!i.isInstalled()) {
                         b.append(sp(in) + "<tr class=\"edit\""
                                 + " onclick=\"javascript:"
                                 + "document.getElementById('"
@@ -793,7 +790,7 @@ public class PluginsView extends AbstractView{
                 // Installed plug-ins
                 //------------------------------------------------------------
                 for(PluginInfo i : l) {
-                    if (i.installed) {
+                    if (i.isInstalled()) {
                         b.append(sp(in) + "<tr class=\"edit\""
                                 + " onclick=\"javascript:"
                                 + "document.getElementById('"

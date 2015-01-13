@@ -1,8 +1,7 @@
 /*
- * This file is part of the Alitheia system, developed by the SQO-OSS
- * consortium as part of the IST FP6 SQO-OSS project, number 033331.
+ * This file is part of the Alitheia system.
  *
- * Copyright 2008 - Organization for Free and Open Source Software,  
+ * Copyright 2010 - Organization for Free and Open Source Software,  
  *                Athens, Greece.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,27 +30,47 @@
  *
  */
 
-package eu.sqooss.service.rest;
+package eu.sqooss.impl.service.tds;
 
-import java.util.Set;
+import eu.sqooss.impl.service.tds.diff.UnifiedDiffParser;
+import eu.sqooss.service.tds.Diff;
+import eu.sqooss.service.tds.Revision;
 
-import javax.ws.rs.core.Application;
+/**
+ * Class that knows how to parse different diff formats.
+ * 
+ * @author Georgios Gousios <gousiosg@gmail.com>
+ *
+ */
+public class DiffFactory {
 
-import eu.sqooss.impl.service.rest.RestServiceRegistry;
-
-public class RestServiceApp extends Application {
-
-	public RestServiceApp() {
-	}
-	
-	@Override
-	public Set<Class<?>> getClasses() {
-		
-		return RestServiceRegistry.getInstance().getResources();
-	}
-	
-	@Override
-	public Set<Object> getSingletons() {
-		return null;
-	}
+    private static DiffFactory instance;
+       
+    public static DiffFactory getInstance() {
+        if (instance == null)
+            instance = new DiffFactory();
+        
+        return instance;
+    }
+    
+    /**
+     * 
+     * 
+     * @param start
+     * @param end
+     * @param basePath
+     * @param diff
+     * @return A {@link eu.sqooss.service.tds.Diff} object if parsing the diff succeded or null if parsing failed.
+     * 
+     * @see {@link http://en.wikipedia.org/wiki/Diff#Unified_format}
+     */
+    public Diff doUnifiedDiff(Revision start, Revision end,
+            String basePath, String diff) {
+        
+        UnifiedDiffParser d = new UnifiedDiffParser(start, end, basePath, diff);
+        if (d.parseDiff())
+            return d;
+        
+        return null;
+    }
 }

@@ -39,7 +39,7 @@
           <target>1.6</target>
           <compilerArguments>
             <!-- Dependency to this class is declared in the -->
-            <processor>eu.sqooss.service.abstractmetric.PluginAnnotationProcessor</processor>
+            <processor>eu.sqooss.service.abstractmetric.annotations.PluginAnnotationProcessor</processor>
           </compilerArguments>
         </configuration>
       </plugin>

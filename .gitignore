@@ -17,3 +17,5 @@ bin/
 *.ipr
 *.iws
 *.db
+
+alitheia/cache/tmp/

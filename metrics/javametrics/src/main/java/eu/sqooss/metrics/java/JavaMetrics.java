@@ -16,10 +16,10 @@ import org.osgi.framework.BundleContext;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.service.abstractmetric.AbstractMetric;
-import eu.sqooss.service.abstractmetric.MetricDecl;
-import eu.sqooss.service.abstractmetric.MetricDeclarations;
-import eu.sqooss.service.abstractmetric.Result;
-import eu.sqooss.service.abstractmetric.SchedulerHints;
+import eu.sqooss.service.abstractmetric.annotations.MetricDecl;
+import eu.sqooss.service.abstractmetric.annotations.MetricDeclarations;
+import eu.sqooss.service.abstractmetric.annotations.Result;
+import eu.sqooss.service.abstractmetric.annotations.SchedulerHints;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.EncapsulationUnit;
 import eu.sqooss.service.db.EncapsulationUnitMeasurement;
@@ -28,10 +28,6 @@ import eu.sqooss.service.db.ExecutionUnitMeasurement;
 import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.ProjectFile;
 import eu.sqooss.service.db.ProjectVersion;
-import eu.sqooss.service.scheduler.Job;
-import eu.sqooss.service.scheduler.ResumePoint;
-import eu.sqooss.service.scheduler.Scheduler;
-import eu.sqooss.service.scheduler.SchedulerException;
 
 @MetricDeclarations(metrics = {
   @MetricDecl(mnemonic = "MCCABE", activators = {ExecutionUnit.class, ProjectVersion.class}, descr = "McCabe Complexity Metric"),

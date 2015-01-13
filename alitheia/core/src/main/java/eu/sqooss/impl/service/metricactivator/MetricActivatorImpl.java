@@ -36,13 +36,13 @@ package eu.sqooss.impl.service.metricactivator;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import eu.sqooss.service.abstractmetric.InvocationOrder;
+import eu.sqooss.service.abstractmetric.annotations.InvocationOrder;
 import org.osgi.framework.BundleContext;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.service.abstractmetric.AbstractMetric;
 import eu.sqooss.service.abstractmetric.AlitheiaPlugin;
-import eu.sqooss.service.abstractmetric.SchedulerHints;
+import eu.sqooss.service.abstractmetric.annotations.SchedulerHints;
 import eu.sqooss.service.cluster.ClusterNodeActionException;
 import eu.sqooss.service.cluster.ClusterNodeService;
 import eu.sqooss.service.db.Bug;
@@ -63,8 +63,8 @@ import eu.sqooss.service.db.ProjectVersion;
 import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.logging.Logger;
 import eu.sqooss.service.metricactivator.MetricActivator;
-import eu.sqooss.service.pa.PluginAdmin;
-import eu.sqooss.service.pa.PluginInfo;
+import eu.sqooss.service.abstractmetric.PluginAdmin;
+import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
 import eu.sqooss.service.scheduler.SchedulerException;

@@ -1,4 +1,4 @@
-package eu.sqooss.service.abstractmetric;
+package eu.sqooss.service.abstractmetric.annotations;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

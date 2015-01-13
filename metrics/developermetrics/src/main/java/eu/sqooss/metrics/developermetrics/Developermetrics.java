@@ -39,10 +39,10 @@ import org.osgi.framework.BundleContext;
 
 import eu.sqooss.service.abstractmetric.AbstractMetric;
 import eu.sqooss.service.abstractmetric.AlreadyProcessingException;
-import eu.sqooss.service.abstractmetric.MetricDecl;
-import eu.sqooss.service.abstractmetric.MetricDeclarations;
-import eu.sqooss.service.abstractmetric.Result;
-import eu.sqooss.service.abstractmetric.Result.ResultType;
+import eu.sqooss.service.abstractmetric.annotations.MetricDecl;
+import eu.sqooss.service.abstractmetric.annotations.MetricDeclarations;
+import eu.sqooss.service.abstractmetric.annotations.Result;
+import eu.sqooss.service.abstractmetric.annotations.Result.ResultType;
 import eu.sqooss.service.db.Developer;
 import eu.sqooss.service.db.Directory;
 import eu.sqooss.service.db.Metric;

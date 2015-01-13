@@ -31,6 +31,7 @@
 package gr.aueb.metrics.findbugsscala
 
 import eu.sqooss.service.abstractmetric._
+import eu.sqooss.service.abstractmetric.annotations._
 import org.osgi.framework.BundleContext
 import eu.sqooss.service.db._
 

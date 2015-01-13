@@ -39,12 +39,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import eu.sqooss.service.abstractmetric.annotations.Result;
 import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.MetricType;
 import eu.sqooss.service.db.PluginConfiguration;
 import eu.sqooss.service.db.StoredProject;
-import eu.sqooss.service.metricactivator.MetricActivationException;
 import eu.sqooss.service.scheduler.Job;
 
 /**
@@ -260,7 +260,7 @@ public interface AlitheiaPlugin {
      *
      * @return A set of DAObject subclasses
      */
-    Set<Class<? extends DAObject>> getActivationTypes();
+    ActivationTypes getActivationTypes();
 
     /**
      * Get the activation type that corresponds to the activation type which 

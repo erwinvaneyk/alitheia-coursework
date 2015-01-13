@@ -31,7 +31,7 @@
  *
  */
 
-package eu.sqooss.impl.service.pa;
+package eu.sqooss.impl.service.abstractmetric;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,13 +56,13 @@ import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
 import eu.sqooss.service.logging.Logger;
-import eu.sqooss.service.pa.PluginAdmin;
-import eu.sqooss.service.pa.PluginInfo;
+import eu.sqooss.service.abstractmetric.PluginAdmin;
+import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
 import eu.sqooss.service.scheduler.SchedulerException;
 
-public class PAServiceImpl implements PluginAdmin, ServiceListener {
+public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 
     /* ===[ Constants: Service search filters ]=========================== */
 
@@ -90,16 +90,15 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     // Required SQO-OSS components
     private Logger logger;
     private DBService sobjDB = null;
-    private AlitheiaCore sobjCore = null;
     
     /**
      * Keeps a list of registered metric plug-in's services, indexed by the
-     * plugin's hash code (stored in the database).
+     * plugins hash code (stored in the database).
      */
-    private ConcurrentHashMap<String, PluginInfo> registeredPlugins =
-        new ConcurrentHashMap<String, PluginInfo>();
+    private final ConcurrentHashMap<String, PluginInfo> registeredPlugins =
+        new ConcurrentHashMap<>();
 
-    public PAServiceImpl () { }
+    public PluginAdminServiceImpl() { }
 
     /**
      * Retrieves the service Id of the specified service reference.
@@ -109,15 +108,11 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
      * @return The service Id.
      */
     private Long getServiceId (ServiceReference sref) {
-        // Check for a valid service reference
-        if (sref == null) {
-            logger.error(INVALID_SREF);
-            return null;
-        }
         try {
             return (Long) sref.getProperty(Constants.SERVICE_ID);
         }
-        catch (ClassCastException e) {
+        catch (NullPointerException | ClassCastException e) {
+            logger.error(INVALID_SREF);
             return null;
         }
     }
@@ -157,7 +152,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
             "(" + Constants.SERVICE_ID +"=" + serviceId + ")";
 
         // Retrieve all services that match the search filter
-        ServiceReference[] matchingServices = null;
+        ServiceReference[] matchingServices;
         try {
             /* Since the service search is performed using a service Id,
              * it MUST return only one service reference.
@@ -224,17 +219,11 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
             logger.debug(
                     "Creating info object for registered plug-in "
                     + sobjPlugin.getName());
-//            PluginInfo pluginInfo = new PluginInfo();
-//            pluginInfo.setPluginName(sobjPlugin.getName());
-//            pluginInfo.setPluginVersion(sobjPlugin.getVersion());
-//            pluginInfo.setServiceRef(srefPlugin);
-//            pluginInfo.setHashcode(getServiceId(srefPlugin).toString());
-            PluginInfo pluginInfo =
-                new PluginInfo(sobjPlugin.getConfigurationSchema(), sobjPlugin);
+            PluginInfo pluginInfo = getPluginInfoInstance(sobjPlugin.getConfigurationSchema(), sobjPlugin);
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(sobjPlugin.getUniqueKey());
             // Mark as not installed
-            pluginInfo.installed = false;
+            pluginInfo.setInstalled(false);
             return pluginInfo;
         }
 
@@ -259,12 +248,11 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
             logger.debug(
                     "Creating info object for installed plug-in "
                     + sobjPlugin.getName());
-            PluginInfo pluginInfo =
-                new PluginInfo(p.getConfigurations(), sobjPlugin);
+            PluginInfo pluginInfo = getPluginInfoInstance(p.getConfigurations(), sobjPlugin);
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(p.getHashcode());
             // Mark as installed
-            pluginInfo.installed = true;
+            pluginInfo.setInstalled(true);
             return pluginInfo;
         }
 
@@ -364,7 +352,6 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
             logger.error(
                     "During plug-in service unregistration - "
                     + " a matching PluginInfo object was not found!");
-            return;
         }
         else {
             // Remove the info object from the info object's list
@@ -401,17 +388,20 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
         
         // Find out what happened to the service
         switch (event.getType()) {
-        // New service was registered
-        case ServiceEvent.REGISTERED:
-            pluginRegistered(affectedService);
-            break;
-        // An existing service is unregistering
-        case ServiceEvent.UNREGISTERING:
-            pluginUnregistering(affectedService);
-            break;
-        // The configuration of an existing service was modified
-        case ServiceEvent.MODIFIED:
-            pluginModified(affectedService);
+            // New service was registered
+            case ServiceEvent.REGISTERED:
+                pluginRegistered(affectedService);
+                break;
+            // An existing service is unregistering
+            case ServiceEvent.UNREGISTERING:
+                pluginUnregistering(affectedService);
+                break;
+            // The configuration of an existing service was modified
+            case ServiceEvent.MODIFIED:
+                pluginModified(affectedService);
+                break;
+            default:
+                logger.warn("Unknown ServiceEvent: " + event.getType());
         }
 
         // Close the DB session
@@ -421,31 +411,28 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
 /* ===[ Implementation of the PluginAdmin interface ]===================== */
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#listPlugins()
+     * @see PluginAdmin#listPlugins()
      */
     public Collection<PluginInfo> listPlugins() {
         return registeredPlugins.values();
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#installPlugin(java.lang.String)
+     * @see PluginAdmin#installPlugin(java.lang.String)
      */
     public boolean installPlugin(String hash) {
         Long sid = getServiceId(hash);
-        if (sid != null) {
-            return installPlugin (sid);
-        }
-        return false;
+        return (sid != null) && installPlugin(sid);
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#installPlugin(java.lang.Long)
+     * @see PluginAdmin#installPlugin(java.lang.Long)
      */
     public boolean installPlugin(Long serviceID) {
         logger.info (
                 "Installing plugin with service ID " + serviceID);
 
-        // Pre-formated error messages
+        // Pre-formatted error messages
         final String INSTALL_FAILED =
             "The installation of plugin with"
             + " service ID "+ serviceID
@@ -490,18 +477,15 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#uninstallPlugin(java.lang.String)
+     * @see PluginAdmin#uninstallPlugin(java.lang.String)
      */
     public boolean uninstallPlugin(String hash) {
         Long sid = getServiceId(hash);
-        if (sid != null) {
-            return uninstallPlugin (sid);
-        }
-        return false;
+        return  (sid != null) && uninstallPlugin (sid);
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#uninstallPlugin(java.lang.Long)
+     * @see PluginAdmin#uninstallPlugin(java.lang.Long)
      */
     public boolean uninstallPlugin(Long serviceID) {
         Scheduler s = AlitheiaCore.getInstance().getScheduler();
@@ -520,14 +504,11 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public <T extends DAObject> List<PluginInfo> listPluginProviders(Class<T> o) {
+        ArrayList<PluginInfo> matching = new ArrayList<>();
 
-        Iterator<PluginInfo> plugins = registeredPlugins.values().iterator();
-        ArrayList<PluginInfo> matching = new ArrayList<PluginInfo>();
-
-        while (plugins.hasNext()) {
-            PluginInfo pi = plugins.next();
-            if ((pi.installed)
-                    && (pi.isActivationType(o))
+        for (PluginInfo pi : registeredPlugins.values()) {
+            if ((pi.isInstalled())
+                    && (pi.getActivationTypes().contains(o))
                     && (pi.getServiceRef() != null)) {
                 matching.add(pi);
             }
@@ -536,13 +517,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public PluginInfo getPluginInfo(AlitheiaPlugin m) {
-        PluginInfo mi = null;
-        Collection<PluginInfo> c = listPlugins();
-        Iterator<PluginInfo> i = c.iterator();
-
-        while (i.hasNext()) {
-            mi = i.next();
-
+        for (PluginInfo mi : listPlugins()) {
             if (mi.getPluginName().equals(m.getName())
                     && mi.getPluginVersion().equals(m.getVersion())) {
                 return mi;
@@ -556,7 +531,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     /* (non-Javadoc)
-     * @see eu.sqooss.service.pa.PluginAdmin#getPlugin(eu.sqooss.service.pa.PluginInfo)
+     * @see PluginAdmin#getPlugin(PluginInfo)
      */
     public AlitheiaPlugin getPlugin(PluginInfo pluginInfo) {
         if (pluginInfo != null) {
@@ -576,14 +551,14 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
             return;
         }
         // Check for installed metric plug-in
-        if (pi.installed) {
+        if (pi.isInstalled()) {
             ServiceReference srefPlugin = pi.getServiceRef();
             Plugin pDao = pluginRefToPluginDAO(srefPlugin);
             pi = createInstalledPI(srefPlugin, pDao);
             if (pi != null) {
                 registeredPlugins.put(pi.getHashcode(), pi);
                 logger.info("Plug-in (" + pi.getPluginName()
-                        + ") successfuly updated");
+                        + ") successfully updated");
                 // TODO: Not sure, if this is the correct plug-in method
                 //       to call upon configuration update, but it is the
                 //       only one which performs something in that scope.
@@ -598,12 +573,10 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public AlitheiaPlugin getImplementingPlugin(String mnemonic) {
-        Iterator<String> i = registeredPlugins.keySet().iterator();
-
-        while (i.hasNext()) {
-            PluginInfo pi = registeredPlugins.get(i.next());
+        for (String i : registeredPlugins.keySet()) {
+            PluginInfo pi = registeredPlugins.get(i);
             // Skip metric plug-ins that are registered but not installed
-            if (pi.installed) {
+            if (pi.isInstalled()) {
                 ServiceReference sr = pi.getServiceRef();
                 Plugin p = pluginRefToPluginDAO(sr);
                 Set<Metric> lm = p.getSupportedMetrics();
@@ -620,7 +593,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     
     private class PluginUninstallJob extends Job {
 
-        private Long serviceID;
+        private final Long serviceID;
         
         public PluginUninstallJob(Long serviceID) {
             this.serviceID = serviceID;
@@ -628,17 +601,15 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
         
         @Override
         public long priority() {
-            // TODO Auto-generated method stub
             return 0x3;
         }
 
         @Override
         protected void run() throws Exception {
-            // TODO Auto-generated method stub
             logger.info (
                     "Uninstalling plugin with service ID " + serviceID);
 
-            // Pre-formated error messages
+            // Pre-formatted error messages
             final String UNINSTALL_FAILED =
                 "The uninstallation of plugin with"
                 + " service ID "+ serviceID
@@ -657,7 +628,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
                 }
                 // Execute the remove() method of this metric plug-in,
                 // and update the plug-in's information object upon success.
-                if (sobjPlugin.remove()) {
+                else if (sobjPlugin.remove()) {
                     // Release the stored configuration DAOs
                     getPluginInfo(sobjPlugin).setPluginConfiguration(
                             new HashSet<PluginConfiguration>());
@@ -691,7 +662,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
 	    logger.info("Starting the PluginAdmin component.");
 
         // Get the AlitheiaCore's object
-        sobjCore = AlitheiaCore.getInstance();
+        AlitheiaCore sobjCore = AlitheiaCore.getInstance();
 
         if (sobjCore != null) {
             // Obtain the required core components
@@ -715,15 +686,21 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
 	}
 
 	@Override
-	public void shutDown() {
-		return ;
-	}
+	public void shutDown() {}
 
 	@Override
 	public void setInitParams(BundleContext bc, Logger l) {
 	    this.bc = bc;
         this.logger = l;
 	}
+
+    private PluginInfo getPluginInfoInstance(Set<PluginConfiguration> pluginConfigurations, AlitheiaPlugin sobjPlugin) {
+        PluginInfo pluginInfo = new PluginInfoImpl(sobjDB, pluginConfigurations);
+        pluginInfo.setPluginName(sobjPlugin.getName());
+        pluginInfo.setPluginVersion(sobjPlugin.getVersion());
+        pluginInfo.setActivationTypes(sobjPlugin.getActivationTypes());
+        return pluginInfo;
+    }
 }
 
 //vi: ai nosi sw=4 ts=4 expandtab
