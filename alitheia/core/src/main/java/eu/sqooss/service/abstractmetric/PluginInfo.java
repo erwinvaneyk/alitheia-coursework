@@ -231,7 +231,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *   or <code>false</code> otherwise.
      */
     public boolean hasConfProp (String name, String type) {
-        return !(getConfPropId(name, type) == null);
+        return getConfPropId(name, type) != null;
     }
 
     /**
