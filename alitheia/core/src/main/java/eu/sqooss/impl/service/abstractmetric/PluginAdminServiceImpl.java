@@ -31,7 +31,7 @@
  *
  */
 
-package eu.sqooss.impl.service.pa;
+package eu.sqooss.impl.service.abstractmetric;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +62,7 @@ import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
 import eu.sqooss.service.scheduler.SchedulerException;
 
-public class PAServiceImpl implements PluginAdmin, ServiceListener {
+public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 
     /* ===[ Constants: Service search filters ]=========================== */
 
@@ -99,7 +99,7 @@ public class PAServiceImpl implements PluginAdmin, ServiceListener {
     private ConcurrentHashMap<String, PluginInfo> registeredPlugins =
         new ConcurrentHashMap<String, PluginInfo>();
 
-    public PAServiceImpl () { }
+    public PluginAdminServiceImpl() { }
 
     /**
      * Retrieves the service Id of the specified service reference.

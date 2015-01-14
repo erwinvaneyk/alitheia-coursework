@@ -48,7 +48,7 @@ import eu.sqooss.impl.service.db.DBServiceImpl;
 import eu.sqooss.impl.service.fds.FDSServiceImpl;
 import eu.sqooss.impl.service.logging.LogManagerImpl;
 import eu.sqooss.impl.service.metricactivator.MetricActivatorImpl;
-import eu.sqooss.impl.service.pa.PAServiceImpl;
+import eu.sqooss.impl.service.abstractmetric.PluginAdminServiceImpl;
 import eu.sqooss.impl.service.rest.ResteasyServiceImpl;
 import eu.sqooss.impl.service.scheduler.SchedulerServiceImpl;
 import eu.sqooss.impl.service.tds.TDSServiceImpl;
@@ -117,7 +117,7 @@ public class AlitheiaCore {
 
     	implementations.put(LogManager.class, LogManagerImpl.class);
     	implementations.put(DBService.class, DBServiceImpl.class);	 
-    	implementations.put(PluginAdmin.class, PAServiceImpl.class);
+    	implementations.put(PluginAdmin.class, PluginAdminServiceImpl.class);
     	implementations.put(Scheduler.class, SchedulerServiceImpl.class);
     	implementations.put(TDSService.class, TDSServiceImpl.class);
     	implementations.put(ClusterNodeService.class, ClusterNodeServiceImpl.class);

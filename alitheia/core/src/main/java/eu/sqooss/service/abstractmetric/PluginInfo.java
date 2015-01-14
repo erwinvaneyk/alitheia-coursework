@@ -110,12 +110,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * <br/>
      * The list of permitted activation interfaces is described in the
      * {@link AlitheiaPlugin} interface and currently includes:
-     * <ul>
-     *   <li>{@link StoredProjectMetric}</li>
-     *   <li>{@link ProjectVersionMetric}</li>
-     *   <li>{@link ProjectFileMetric}</li>
-     *   <li>{@link FileGroupMetric}</li>
-     * </ul>
      */
     Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
 
@@ -273,6 +267,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
                 }
                 // Check for a boolean type
                 else if (type.equals(ConfigurationType.BOOLEAN)) {
+                    Boolean.valueOf("tr");
                     if ((!newVal.equals("true"))
                             && (!newVal.equals("false"))) {
                         throw new Exception("Not a valid boolean value!");
