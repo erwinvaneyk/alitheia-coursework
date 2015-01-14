@@ -111,7 +111,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * The list of permitted activation interfaces is described in the
      * {@link AlitheiaPlugin} interface and currently includes:
      */
-    Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
+    private Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
 
     /**
      * The hash code's value of the associated metric metric plug-in.
@@ -561,33 +561,26 @@ public class PluginInfo implements Comparable<PluginInfo> {
     public String toString() {
         StringBuilder b = new StringBuilder();
         // Add the metric plug-in's name
-        b.append((
-                ((getPluginName() != null)
-                        && (getPluginName().length() > 0))
-                ? getPluginName()
-                        : "[UNKNOWN]"));
+        b.append(displayIfNotEmpty(getPluginName(), "[UNKNOWN]"));
         // Add the metric plug-in's version
-        b.append((
-                ((getPluginVersion() != null)
-                        && (getPluginVersion().length() > 0))
-                ? getPluginVersion()
-                        : "[UNKNOWN]"));
+        b.append(displayIfNotEmpty(getPluginVersion(), "[UNKNOWN]"));
         // Add the metric plug-in's class name
         b.append(" [");
         if (getServiceRef() != null) {
             String[] classNames =
                 (String[]) serviceRef.getProperty(Constants.OBJECTCLASS);
-            b.append ((
-                    ((classNames != null)
-                            && (classNames.length > 0))
-                    ? (StringUtils.join(classNames, ","))
-                            : "UNKNOWN"));
+            b.append(displayIfNotEmpty(
+                    StringUtils.join(classNames, ","), "UNKNOWN"));
         }
         else {
             b.append("UNKNOWN");
         }
         b.append("]");
         return b.toString();
+    }
+
+    private String displayIfNotEmpty(String val, String orElse) {
+        return (val != null) && (!val.isEmpty()) ? val : orElse;
     }
 
 	public int compareTo(PluginInfo pi) {
