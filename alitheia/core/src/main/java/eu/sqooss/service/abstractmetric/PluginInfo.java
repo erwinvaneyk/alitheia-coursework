@@ -363,9 +363,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
             // Remove the specified configuration property
             PluginConfiguration prop = db.findObjectById(
                     PluginConfiguration.class, propId);
-            if ((prop != null) && (db.deleteRecord(prop))) {
-                return true;
-            }
+
+            return ((prop != null) && (db.deleteRecord(prop)));
         }
 
         return false;
