@@ -69,23 +69,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
         INTEGER,
         STRING,
         BOOLEAN,
-        DOUBLE;
-
-        public static ConfigurationType fromString(String config) {
-            if (config.equals(BOOLEAN.toString()))
-                return BOOLEAN;
-
-            if (config.equals(STRING.toString()))
-                return STRING;
-
-            if (config.equals(INTEGER.toString()))
-                return INTEGER;
-           
-            if (config.equals(DOUBLE.toString()))
-            	return DOUBLE;
-
-            return null;
-        }
+        DOUBLE
     }
 
     /**
@@ -260,13 +244,9 @@ public class PluginInfo implements Comparable<PluginInfo> {
             if (pc.getName().equals(name)) {
                 // Retrieve the configuration property's type
                 ConfigurationType type =
-                    ConfigurationType.fromString(pc.getType());
-                // Check for invalid type
-                if (type == null) {
-                    throw new Exception("Invalid property's type!");
-                }
+                    ConfigurationType.valueOf(pc.getType());
                 // Check for a boolean type
-                else if (type.equals(ConfigurationType.BOOLEAN)) {
+                if (type.equals(ConfigurationType.BOOLEAN)) {
                     if ((!newVal.equals("true"))
                             && (!newVal.equals("false"))) {
                         throw new Exception("Not a valid boolean value!");
@@ -328,10 +308,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
         }
 
         // Check for invalid type
-        if ((type == null)
-                || (ConfigurationType.fromString(type) == null)) {
-            throw new Exception("Invalid type!");
-        }
+        ConfigurationType.valueOf(type);
 
         // Check for invalid value
         if (value == null) {
@@ -398,10 +375,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
         }
 
         // Check for invalid type
-        if ((type == null)
-                || (ConfigurationType.fromString(type) == null)) {
-            throw new Exception("Invalid type!");
-        }
+        ConfigurationType.valueOf(type);
 
         // Get the property's Id
         Long propId = getConfPropId(name, type);
