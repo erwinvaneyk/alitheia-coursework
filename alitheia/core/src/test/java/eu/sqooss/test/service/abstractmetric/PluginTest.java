@@ -30,6 +30,13 @@ public class PluginTest {
             workingDir = workingDir.getParentFile().getParentFile();
         }
         Option[] options = options(
+                frameworkProperty("org.osgi.service.http.port").value("8080"),
+                frameworkProperty("eu.sqooss.db").value("MySQL"),
+                frameworkProperty("eu.sqooss.db.host").value("localhost"),
+                frameworkProperty("eu.sqooss.db.schema").value("alitheia"),
+                frameworkProperty("eu.sqooss.db.user").value("alitheia"),
+                frameworkProperty("eu.sqooss.db.passwd").value("alitheia"),
+                frameworkProperty("eu.sqooss.db.conpool").value("c3p0"),
                 mavenBundle("org.osgi", "org.osgi.core", "4.2.0"),
                 mavenBundle("org.apache.felix", "org.apache.felix.webconsole", "1.2.8"),
                 mavenBundle("org.apache.felix", "org.apache.felix.scr", "1.0.8"),
