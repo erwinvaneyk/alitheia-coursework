@@ -299,31 +299,35 @@ public class PluginInfo implements Comparable<PluginInfo> {
         return p.getConfigurations().add(newParam);
     }
 
-    private void checkConfigValue(ConfigurationType type, String value) throws Exception {
-        if(value == null) {
-            throw new Exception("Invalid value!");
-        }
-        switch (type) {
-            case BOOLEAN:
-                if ((!value.equals("true"))
-                        && (!value.equals("false"))) {
-                    throw new Exception("Not a valid boolean value!");
-                }
-                break;
-            case INTEGER:
-                try {
+    /**
+     * Checks if the string-based value is compatible with the given type
+     *
+     * @param type based on the specified ConfigurationTypes
+     * @param value a string-based value, which should be compatible with <code>type</code>.
+     * @throws IllegalArgumentException the value is not compatible
+     */
+    private void checkConfigValue(ConfigurationType type, String value) throws IllegalArgumentException {
+        try {
+            // Creative NullPointerException-checks
+            value.hashCode();
+            type.hashCode();
+            // Given the value check if it is compatible with the given type
+            switch (type) {
+                case BOOLEAN:
+                    if ((!value.equals("true"))
+                            && (!value.equals("false"))) {
+                        throw new Exception("Not a valid boolean value!");
+                    }
+                    break;
+                case INTEGER:
                     Integer.valueOf(value);
-                } catch (NumberFormatException nfe) {
-                    throw new Exception("Not a valid integer value!");
-                }
-                break;
-            case DOUBLE:
-                try {
+                    break;
+                case DOUBLE:
                     Double.valueOf(value);
-                } catch (NumberFormatException nfe) {
-                    throw new Exception("Not a valid double value!");
-                }
-                break;
+                    break;
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(value + " is not a valid " + type + " value!", e);
         }
     }
 
