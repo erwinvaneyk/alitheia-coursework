@@ -36,6 +36,7 @@ package eu.sqooss.service.abstractmetric;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.sqooss.service.abstractmetric.pluginconfig.ConfigurationType;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 
@@ -65,12 +66,12 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * their values are used mostly from internal metric processes, like
      * results rendering and validation.
      */
-    public enum ConfigurationType {
+    /*public enum ConfigurationType {
         INTEGER,
         STRING,
         BOOLEAN,
         DOUBLE
-    }
+    }*/
 
     /**
      * The service reference of the service that registered this metric
@@ -312,7 +313,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
             value.hashCode();
             type.hashCode();
             // Given the value check if it is compatible with the given type
-            switch (type) {
+            type.validateString(value);
+            /*switch (type) {
                 case BOOLEAN:
                     if ((!value.equals("true"))
                             && (!value.equals("false"))) {
@@ -325,7 +327,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
                 case DOUBLE:
                     Double.valueOf(value);
                     break;
-            }
+            }*/
         } catch (Exception e) {
             throw new IllegalArgumentException(value + " is not a valid " + type + " value!", e);
         }
