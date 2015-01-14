@@ -34,7 +34,6 @@
 package eu.sqooss.service.abstractmetric;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.osgi.framework.Constants;
@@ -87,7 +86,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
 
             return null;
         }
-    };
+    }
 
     /**
      * The service reference of the service that registered this metric
@@ -118,8 +117,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *   <li>{@link FileGroupMetric}</li>
      * </ul>
      */
-    Set<Class<? extends DAObject>> activationTypes =
-        new HashSet<Class<? extends DAObject>>();
+    Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
 
     /**
      * The hash code's value of the associated metric metric plug-in.
@@ -141,8 +139,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * A list containing the current set of configuration parameters of the
      * associated metric plug-in
      */
-    private Set<PluginConfiguration> config =
-        new HashSet<PluginConfiguration>();
+    private Set<PluginConfiguration> config = new HashSet<>();
 
     /**
      * This flag is set to <code>false<code> on a newly registered metric
@@ -240,11 +237,11 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *   or <code>false</code> otherwise.
      */
     public boolean hasConfProp (String name, String type) {
-        return ((getConfPropId(name, type) == null) ? false : true);
+        return !(getConfPropId(name, type) == null);
     }
 
     /**
-     * Sets a new value of existing metric plugin's configuration property
+     * Sets a new value of existing metric plugins configuration property
      * by creating a new database record.
      *
      * @param db the DB components object
@@ -255,7 +252,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @return <code>true</code> upon successful update, of <code>false</code>
      *   when a corresponding database record does not exist.
      *
-     * @throws <code>Exception</code> upon incorrect value's syntax, or
+     * @throws Exception upon incorrect value's syntax, or
      *   invalid property's type.
      */
     public boolean updateConfigEntry(DBService db, String name, String newVal)
@@ -276,8 +273,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
                 }
                 // Check for a boolean type
                 else if (type.equals(ConfigurationType.BOOLEAN)) {
-                    if ((newVal.equals("true") == false)
-                            && (newVal.equals("false") == false)) {
+                    if ((!newVal.equals("true"))
+                            && (!newVal.equals("false"))) {
                         throw new Exception("Not a valid boolean value!");
                     }
                 }
@@ -321,7 +318,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @return <code>true</code> upon successful append, of <code>false</code>
      *   when a corresponding database record can not be created.
      *
-     * @throws <code>Exception</code> upon incorrect value's syntax,
+     * @throws Exception upon incorrect value's syntax,
      *   invalid property's type, or invalid property's name.
      */
     public boolean addConfigEntry(
@@ -348,8 +345,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
         }
         // Check for invalid boolean value
         else if (type.equals(ConfigurationType.BOOLEAN.toString())) {
-            if ((value.equals("true") == false)
-                    && (value.equals("false") == false)) {
+            if ((!value.equals("true"))
+                    && (!value.equals("false"))) {
                 throw new Exception("Not a valid boolean value!");
             }
         }
@@ -394,7 +391,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @return <code>true</code> upon successful remove, or <code>false</code>
      *   when a corresponding database record can not be found.
      *
-     * @throws <code>Exception</code> upon invalid property's type or name.
+     * @throws Exception upon invalid property's type or name.
      */
     public boolean removeConfigEntry(
             DBService db,
@@ -427,7 +424,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
 }
 
     /**
-     * Sets the metric's name. In practice the <code>metricName</code>
+     * Sets the metrics name. In practice the <code>metricName</code>
      * parameter must be equal with the name of the associated metric
      * plug-in.
      *
@@ -448,7 +445,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
     }
 
     /**
-     * Sets the metric's version. In practice the <code>metricVersion</code>
+     * Sets the metrics version. In practice the <code>metricVersion</code>
      * parameter must be equal with the version of the associated metric
      * plug-in.
      *
@@ -511,10 +508,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
     public boolean isActivationType(Class<? extends DAObject> o) {
         // Compare the activation list's entries to the given activation
         // interface, until a match is found
-        Iterator<Class<? extends DAObject>> i =
-            this.activationTypes.iterator();
-        while (i.hasNext()) {
-            if (i.next().equals(o))
+        for (Class<? extends DAObject> activationType : activationTypes) {
+            if (activationType.equals(o))
                 return true;
         }
         return false;
