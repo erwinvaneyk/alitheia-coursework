@@ -267,7 +267,6 @@ public class PluginInfo implements Comparable<PluginInfo> {
                 }
                 // Check for a boolean type
                 else if (type.equals(ConfigurationType.BOOLEAN)) {
-                    Boolean.valueOf("tr");
                     if ((!newVal.equals("true"))
                             && (!newVal.equals("false"))) {
                         throw new Exception("Not a valid boolean value!");
