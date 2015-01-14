@@ -2,8 +2,13 @@ package eu.sqooss.service.abstractmetric;
 
 import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.DBService;
+import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
+import org.apache.commons.lang.ObjectUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +18,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.*;
+import static org.powermock.api.mockito.PowerMockito.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Plugin.class)
 public class PluginInfoTest {
     private PluginInfo pi;
     private Set<PluginConfiguration> spc;
@@ -27,11 +35,13 @@ public class PluginInfoTest {
         return spc;
     }
 
+
     @Test
      public void defaultConstructorEmptyConfig() {
         pi = new PluginInfo();
         assertEquals(0, pi.getConfiguration().size());
     }
+
 
     @Test
     public void constructorWithConfig() {
@@ -39,17 +49,20 @@ public class PluginInfoTest {
         assertEquals(spc, pi.getConfiguration());
     }
 
+
     /**@Test
     public void constructorWithConfigAndNull() {
         pi = new PluginInfo(setWithOneElement(), null);
         assertEquals(spc, pi.getConfiguration());
     }*/
 
+
     @Test
     public void constructorWithConfigAndNull() {
         pi = new PluginInfo(setWithOneElement(), null, null, null);
         assertEquals(spc, pi.getConfiguration());
     }
+
 
     /**@Test
     public void constructorWithConfigAndPlugin() {
@@ -69,6 +82,7 @@ public class PluginInfoTest {
         assertEquals(activationTypes, pi.getActivationTypes());
     }*/
 
+
     @Test
     public void constructorWithConfigAndPlugin() {
         String name = "someName";
@@ -82,11 +96,13 @@ public class PluginInfoTest {
         assertEquals(activationTypes, pi.getActivationTypes());
     }
 
+
     @Test
     public void testGetConfPropIdInvalidName() {
         pi = new PluginInfo();
         assertNull(pi.getConfPropId(null, "type"));
     }
+
 
     @Test
     public void testGetConfPropIdInvalidType() {
@@ -94,11 +110,13 @@ public class PluginInfoTest {
         assertNull(pi.getConfPropId("name", null));
     }
 
+
     @Test
     public void testGetConfPropIdEmptySet() {
         pi = new PluginInfo();
         assertNull(pi.getConfPropId("name", "type"));
     }
+
 
     @Test
     public void testGetConfPropIdOneElement() {
@@ -115,16 +133,19 @@ public class PluginInfoTest {
         assertEquals(id, (long) (pi.getConfPropId("aName", "aType")));
     }
 
+
     @Test(expected=Exception.class)
     public void testUpdateConfigEntryException() throws Exception {
         pi.updateConfigEntry(null, null, null);
     }
+
 
     @Test
     public void testUpdateConfigEntryNotFound() throws Exception {
         pi = new PluginInfo();
         assertFalse(pi.updateConfigEntry(null, "aName", null));
     }
+
 
     @Test
     public void testUpdateConfigEntryFound() throws Exception {
@@ -146,6 +167,7 @@ public class PluginInfoTest {
         assertTrue(pi.updateConfigEntry(dbservice, "aName", "42"));
         verify(pc).setValue("42");
     }
+
 
     @Test
     public void testRemoveConfigEntry() throws Exception {
@@ -170,6 +192,19 @@ public class PluginInfoTest {
     }
 
 
+    @Test
+    public void testAddConfigEntry() throws Exception {
+        Plugin p = mock(Plugin.class);
+
+        mockStatic(Plugin.class);
+        when(Plugin.getPluginByHashcode(any(String.class))).thenReturn(p);
+
+        pi = new PluginInfo();
+
+        assertTrue(pi.addConfigEntry(null, "name", "description", "BOOLEAN", "true"));
+    }
+
+
     /**
      *    COVERAGE BOOST FTW
      */
@@ -188,6 +223,7 @@ public class PluginInfoTest {
         assertNull(pi.getConfPropId("someOtherName", "INTEGER"));
     }
 
+
     @Test
     public void testUpdateConfigEntryNotFound2() throws Exception {
         PluginConfiguration pc = mock(PluginConfiguration.class);
@@ -201,5 +237,27 @@ public class PluginInfoTest {
 
         assertFalse(pi.updateConfigEntry(null, "aName", null));
         assertNotNull(pi.toString());
+    }
+
+
+    @Test
+    public void testAddActivationType() {
+        pi = new PluginInfo();
+        pi.addActivationType(DAObject.class);
+
+        assertTrue(pi.isActivationType(DAObject.class));
+    }
+
+    @Test
+    public void testIsActivationTypeFalse() {
+        pi = new PluginInfo();
+
+        assertFalse(pi.isActivationType(DAObject.class));
+    }
+
+
+    @Test(expected = NullPointerException.class)
+    public void testCheckConfigValueException() throws Exception {
+        pi.addConfigEntry(null, "name", "description", "DOUBLE", null);
     }
 }
