@@ -245,30 +245,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
                 // Retrieve the configuration property's type
                 ConfigurationType type =
                     ConfigurationType.valueOf(pc.getType());
-                // Check for a boolean type
-                if (type.equals(ConfigurationType.BOOLEAN)) {
-                    if ((!newVal.equals("true"))
-                            && (!newVal.equals("false"))) {
-                        throw new Exception("Not a valid boolean value!");
-                    }
-                }
-                // Check for an integer type
-                else if (type.equals(ConfigurationType.INTEGER)) {
-                    try {
-                        Integer.valueOf(newVal);
-                    } catch (NumberFormatException nfe) {
-                        throw new Exception("Not a valid integer value!");
-                    }
-                }
-                
-                // Check for a double type
-                else if (type.equals(ConfigurationType.DOUBLE)) {
-                    try {
-                        Double.valueOf(newVal);
-                    } catch (NumberFormatException nfe) {
-                        throw new Exception("Not a valid double value!");
-                    }
-                }
+                // Check for invalid value/type combinations
+                checkConfigValue(type, newVal);
 
                 // Update the given configuration property
                 pc = db.attachObjectToDBSession(pc);
@@ -306,38 +284,8 @@ public class PluginInfo implements Comparable<PluginInfo> {
         if (name == null) {
             throw new Exception("Invalid name!");
         }
-
-        // Check for invalid type
-        ConfigurationType.valueOf(type);
-
-        // Check for invalid value
-        if (value == null) {
-            throw new Exception("Invalid value!");
-        }
-        // Check for invalid boolean value
-        else if (type.equals(ConfigurationType.BOOLEAN.toString())) {
-            if ((!value.equals("true"))
-                    && (!value.equals("false"))) {
-                throw new Exception("Not a valid boolean value!");
-            }
-        }
-        // Check for an invalid integer value
-        else if (type.equals(ConfigurationType.INTEGER.toString())) {
-            try {
-                Integer.valueOf(value);
-            } catch (NumberFormatException nfe) {
-                throw new Exception("Not a valid integer value!");
-            }
-        }
-     
-     // Check for an invalid double value
-        else if (type.equals(ConfigurationType.DOUBLE.toString())) {
-            try {
-                Double.valueOf(value);
-            } catch (NumberFormatException nfe) {
-                throw new Exception("Not a valid double value!");
-            }
-        }
+        // Check for invalid value/type combinations
+        checkConfigValue(ConfigurationType.valueOf(type), value);
 
         // Add the new configuration property
         PluginConfiguration newParam =
@@ -349,7 +297,35 @@ public class PluginInfo implements Comparable<PluginInfo> {
         Plugin p = Plugin.getPluginByHashcode(hashcode);
         newParam.setPlugin(p);
         return p.getConfigurations().add(newParam);
-}
+    }
+
+    private void checkConfigValue(ConfigurationType type, String value) throws Exception {
+        if(value == null) {
+            throw new Exception("Invalid value!");
+        }
+        switch (type) {
+            case BOOLEAN:
+                if ((!value.equals("true"))
+                        && (!value.equals("false"))) {
+                    throw new Exception("Not a valid boolean value!");
+                }
+                break;
+            case INTEGER:
+                try {
+                    Integer.valueOf(value);
+                } catch (NumberFormatException nfe) {
+                    throw new Exception("Not a valid integer value!");
+                }
+                break;
+            case DOUBLE:
+                try {
+                    Double.valueOf(value);
+                } catch (NumberFormatException nfe) {
+                    throw new Exception("Not a valid double value!");
+                }
+                break;
+        }
+    }
 
     /**
      * Removes an existing configuration property of this metric plug-in by
