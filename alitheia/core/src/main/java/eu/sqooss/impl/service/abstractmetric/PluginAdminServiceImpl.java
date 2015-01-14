@@ -230,7 +230,8 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 //            pluginInfo.setServiceRef(srefPlugin);
 //            pluginInfo.setHashcode(getServiceId(srefPlugin).toString());
             PluginInfo pluginInfo =
-                new PluginInfo(sobjPlugin.getConfigurationSchema(), sobjPlugin);
+                new PluginInfo(sobjPlugin.getConfigurationSchema(), sobjPlugin.getName(),
+                        sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(sobjPlugin.getUniqueKey());
             // Mark as not installed
@@ -260,7 +261,8 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
                     "Creating info object for installed plug-in "
                     + sobjPlugin.getName());
             PluginInfo pluginInfo =
-                new PluginInfo(p.getConfigurations(), sobjPlugin);
+                new PluginInfo(p.getConfigurations(), sobjPlugin.getName(),
+                        sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(p.getHashcode());
             // Mark as installed

@@ -39,13 +39,19 @@ public class PluginInfoTest {
         assertEquals(spc, pi.getConfiguration());
     }
 
-    @Test
+    /**@Test
     public void constructorWithConfigAndNull() {
         pi = new PluginInfo(setWithOneElement(), null);
         assertEquals(spc, pi.getConfiguration());
-    }
+    }*/
 
     @Test
+    public void constructorWithConfigAndNull() {
+        pi = new PluginInfo(setWithOneElement(), null, null, null);
+        assertEquals(spc, pi.getConfiguration());
+    }
+
+    /**@Test
     public void constructorWithConfigAndPlugin() {
         String name = "someName";
         String version = "1.2.3";
@@ -57,6 +63,19 @@ public class PluginInfoTest {
         when(ap.getActivationTypes()).thenReturn(activationTypes);
 
         pi = new PluginInfo(setWithOneElement(), ap);
+        assertEquals(spc, pi.getConfiguration());
+        assertEquals(name, pi.getPluginName());
+        assertEquals(version, pi.getPluginVersion());
+        assertEquals(activationTypes, pi.getActivationTypes());
+    }*/
+
+    @Test
+    public void constructorWithConfigAndPlugin() {
+        String name = "someName";
+        String version = "1.2.3";
+        Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
+
+        pi = new PluginInfo(setWithOneElement(), name, version, activationTypes);
         assertEquals(spc, pi.getConfiguration());
         assertEquals(name, pi.getPluginName());
         assertEquals(version, pi.getPluginVersion());
