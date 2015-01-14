@@ -234,10 +234,10 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *   invalid property's type.
      */
     public boolean updateConfigEntry(DBService db, String name, String newVal)
-        throws Exception {
+        throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new Exception("Invalid name!");
+            throw new IllegalArgumentException("Invalid name: " + name + "!");
         }
         // Check if such configuration property exists
         for (PluginConfiguration pc : config) {
@@ -279,10 +279,10 @@ public class PluginInfo implements Comparable<PluginInfo> {
             String description,
             String type,
             String value)
-    throws Exception {
+    throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new Exception("Invalid name!");
+            throw new IllegalArgumentException("Invalid name: " + name + "!");
         }
         // Check for invalid value/type combinations
         checkConfigValue(ConfigurationType.valueOf(type), value);
@@ -348,10 +348,10 @@ public class PluginInfo implements Comparable<PluginInfo> {
             DBService db,
             String name,
             String type)
-    throws Exception {
+    throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new Exception("Invalid name!");
+            throw new IllegalArgumentException("Invalid name: " + name + "!");
         }
 
         // Check for invalid type
