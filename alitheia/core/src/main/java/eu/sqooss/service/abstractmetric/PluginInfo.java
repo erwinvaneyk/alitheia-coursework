@@ -150,15 +150,15 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * fields found in the given plug-in instance.
      *
      * @param c - the list of configuration parameters
-     * @param p the <code>AlitheiaPlugin</code> instance
+     * @param name the name of the plugin
+     * @param version the version of the plugin
+     * @param activationTypes the activationTypes of the plugin
      */
-    public PluginInfo(Set<PluginConfiguration> c, AlitheiaPlugin p) {
+    public PluginInfo(Set<PluginConfiguration> c, String name, String version, Set<Class<? extends DAObject>> activationTypes) {
         setPluginConfiguration(c);
-        if (p != null) {
-            setPluginName(p.getName());
-            setPluginVersion(p.getVersion());
-            setActivationTypes(p.getActivationTypes());
-        }
+        setPluginName(name);
+        setPluginVersion(version);
+        setActivationTypes(activationTypes);
     }
 
 
