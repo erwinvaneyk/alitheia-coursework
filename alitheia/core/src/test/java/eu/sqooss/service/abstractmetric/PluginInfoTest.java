@@ -88,7 +88,7 @@ public class PluginInfoTest {
     public void constructorWithConfigAndPlugin() {
         String name = "someName";
         String version = "1.2.3";
-        Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
+        ActivationTypes activationTypes = new ActivationTypes();
 
         pi = new PluginInfo(setWithOneElement(), name, version, activationTypes);
         assertEquals(spc, pi.getConfiguration());
@@ -245,16 +245,16 @@ public class PluginInfoTest {
     @Test
     public void testAddActivationType() {
         pi = new PluginInfo();
-        pi.addActivationType(DAObject.class);
+        pi.getActivationTypes().add(DAObject.class);
 
-        assertTrue(pi.isActivationType(DAObject.class));
+        assertTrue(pi.getActivationTypes().contains(DAObject.class));
     }
 
     @Test
     public void testIsActivationTypeFalse() {
         pi = new PluginInfo();
 
-        assertFalse(pi.isActivationType(DAObject.class));
+        assertFalse(pi.getActivationTypes().contains(DAObject.class));
     }
 
 

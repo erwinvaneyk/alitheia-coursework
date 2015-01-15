@@ -529,7 +529,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
         while (plugins.hasNext()) {
             PluginInfo pi = plugins.next();
             if ((pi.installed)
-                    && (pi.isActivationType(o))
+                    && (pi.getActivationTypes().contains(o))
                     && (pi.getServiceRef() != null)) {
                 matching.add(pi);
             }

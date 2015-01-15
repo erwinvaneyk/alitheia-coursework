@@ -121,8 +121,8 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
     private Map<String, Metric> metrics = new HashMap<String, Metric>();
     
     /** The list of this plug-in's activators*/
-    private Set<Class<? extends DAObject>> activators =
-        new HashSet<Class<? extends DAObject>>();
+    private ActivationTypes activators =
+        new ActivationTypes();
 
     private Map<Metric, List<Class<? extends DAObject>>> metricActType =
     	new HashMap<Metric, List<Class<? extends DAObject>>>();
@@ -675,7 +675,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
     }
 
     /**{@inheritDoc}*/
-    public final Set<Class<? extends DAObject>> getActivationTypes() {    
+    public final ActivationTypes getActivationTypes() {
         return activators;
     }
 
