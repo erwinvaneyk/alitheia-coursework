@@ -1,63 +1,24 @@
-/*
- * This file is part of the Alitheia system, developed by the SQO-OSS
- * consortium as part of the IST FP6 SQO-OSS project, number 033331.
- *
- * Copyright 2007 - 2010 - Organization for Free and Open Source Software,  
- *                Athens, Greece.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *
- *     * Redistributions in binary form must reproduce the above
- *       copyright notice, this list of conditions and the following
- *       disclaimer in the documentation and/or other materials provided
- *       with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
 package eu.sqooss.service.abstractmetric;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.osgi.framework.Constants;
+import eu.sqooss.service.db.DAObject;
+import eu.sqooss.service.db.PluginConfiguration;
 import org.osgi.framework.ServiceReference;
 
-import eu.sqooss.service.db.DAObject;
-import eu.sqooss.service.db.DBService;
-import eu.sqooss.service.db.Plugin;
-import eu.sqooss.service.db.PluginConfiguration;
-import eu.sqooss.service.util.StringUtils;
+import java.util.Set;
 
 /**
  * This class holds runtime and configuration information about single metric
  * plug-in.
  * <br/>
- * Usually an instance of a <code>PluginInfo</code> is created from the
+ * Usually an instance of a <code>PluginInfo</code> implementation is created from the
  * <code>PluginAdmin</code> implementation, just after a new metric plug-in
  * bundle is installed in the OSGi framework, who registers a metric
  * plug-in service. Some of the information provided from the metric
  * plug-in object registered with that OSGi service, as well as part of
- * the service's information are copied into this new <code>PluginInfo</code>
+ * the service's information are copied into this new <code>PluginInfoImpl</code>
  * instance.
  */
-public class PluginInfo implements Comparable<PluginInfo> {
+public interface PluginInfo {
 
     /**
      * This enumeration includes all permitted types of configuration values,
@@ -73,112 +34,18 @@ public class PluginInfo implements Comparable<PluginInfo> {
     }
 
     /**
-     * The service reference of the service that registered this metric
-     * plug-in
-     */
-    private ServiceReference serviceRef = null;
-
-    /**
-     * The name of the associated  metric plug-in
-     */
-    private String pluginName = null;
-
-    /**
-     * The version of the associated metric plug-in
-     */
-    private String pluginVersion = null;
-
-    /**
-     * This list include all activation interfaces supported by the associated
-     * metric plug-in.
-     * <br/>
-     * The list of permitted activation interfaces is described in the
-     * {@link AlitheiaPlugin} interface and currently includes:
-     */
-    private Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
-
-    /**
-     * The hash code's value of the associated metric metric plug-in.
-     * <br/>
-     * After a new metric plug-in is registered as service in the OSGi
-     * framework, the <code>PluginAdmin</code> initializes this field with
-     * the service's ID value, by calling the <code>setHashcode(String)</code>
-     * method.
-     * <br/>
-     * Once the metric plug-in's <code>install()</code> method is called,
-     * the <code>PluginAdmin</code> replaces the old <code>PluginInfo</code>
-     * with a new one, whose <code>hashcode</code> field is initialized with
-     * the hash code's value, that this metric plug-in stored in its database
-     * record.
-     */
-    private String hashcode;
-
-    /**
-     * A list containing the current set of configuration parameters of the
-     * associated metric plug-in
-     */
-    private Set<PluginConfiguration> config = new HashSet<>();
-
-    /**
-     * This flag is set to <code>false<code> on a newly registered metric
-     * plug-ins, and changed to <code>true</code> after the metric plug-in's
-     * <code>install()</code> method is called (and successfully performed).
-     */
-    public boolean installed = false;
-
-    /**
-     * Empty constructor.
-     */
-    public PluginInfo() {
-
-    }
-
-    /**
-     * Simple constructor, that creates a new <code>PluginInfo</code> instance
-     * and initializes it with the given metric plug-in's configuration
-     * parameters.
-     *
-     * @param c - the list of configuration parameters
-     */
-    public PluginInfo(Set<PluginConfiguration> c) {
-        setPluginConfiguration(c);
-    }
-
-    /**
-     * Creates a new <code>PluginInfo</code> instance, and initializes it with
-     * the given metric plug-in's configuration parameters and the description
-     * fields found in the given plug-in instance.
-     *
-     * @param c - the list of configuration parameters
-     * @param name the name of the plugin
-     * @param version the version of the plugin
-     * @param activationTypes the activationTypes of the plugin
-     */
-    public PluginInfo(Set<PluginConfiguration> c, String name, String version, Set<Class<? extends DAObject>> activationTypes) {
-        setPluginConfiguration(c);
-        setPluginName(name);
-        setPluginVersion(version);
-        setActivationTypes(activationTypes);
-    }
-
-
-    /**
      * Initializes the configuration set that is available for this plug-in.
-     * 
+     *
      * @param c the plug-in configuration set
      */
-    public void setPluginConfiguration (Set<PluginConfiguration> c) {
-        this.config = c;
-    }
+    public void setPluginConfiguration (Set<PluginConfiguration> c);
 
     /**
      * Returns the list of existing metric configuration parameters.
      *
      * @return The list of configuration parameters.
      */
-    public Set<PluginConfiguration> getConfiguration() {
-        return this.config;
-    }
+    public Set<PluginConfiguration> getConfiguration();
 
     /**
      * Returns the Id of the given configuration property.
@@ -189,20 +56,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @return The property's Id, or <code>null</code> if the property does
      *   not exist.
      */
-    public Long getConfPropId (String name, String type) {
-        // Check if all values are valid
-        if ((name == null) || (type == null)) {
-            return null;
-        }
-        // Search for a matching property
-        for (PluginConfiguration property : config) {
-            if ((property.getName().equals(name))
-                    && (property.getType().equals(type))) {
-                return property.getId();
-            }
-        }
-        return null;
-    }
+    public Long getConfPropId (String name, String type);
 
     /**
      * Verifies, if the specified configuration property exist in this
@@ -214,9 +68,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @return <code>true</code>, if such property is found,
      *   or <code>false</code> otherwise.
      */
-    public boolean hasConfProp (String name, String type) {
-        return getConfPropId(name, type) != null;
-    }
+    public boolean hasConfProp (String name, String type);
 
     /**
      * Sets a new value of existing metric plugins configuration property
@@ -233,29 +85,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @throws Exception upon incorrect value's syntax, or
      *   invalid property's type.
      */
-    public boolean updateConfigEntry(DBService db, String name, String newVal)
-        throws IllegalArgumentException {
-        // Check for an invalid name
-        if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
-        }
-        // Check if such configuration property exists
-        for (PluginConfiguration pc : config) {
-            if (pc.getName().equals(name)) {
-                // Retrieve the configuration property's type
-                ConfigurationType type =
-                    ConfigurationType.valueOf(pc.getType());
-                // Check for invalid value/type combinations
-                checkConfigValue(type, newVal);
-
-                // Update the given configuration property
-                pc = db.attachObjectToDBSession(pc);
-                pc.setValue(newVal);
-                return true;
-            }
-        }
-        return false;
-    }
+    public boolean updateConfigEntry(String name, String newVal) throws IllegalArgumentException;
 
     /**
      * Adds a new configuration property for this metric plug-in by creating
@@ -273,63 +103,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      * @throws Exception upon incorrect value's syntax,
      *   invalid property's type, or invalid property's name.
      */
-    public boolean addConfigEntry(
-            DBService db,
-            String name,
-            String description,
-            String type,
-            String value)
-    throws IllegalArgumentException {
-        // Check for an invalid name
-        if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
-        }
-        // Check for invalid value/type combinations
-        checkConfigValue(ConfigurationType.valueOf(type), value);
-
-        // Add the new configuration property
-        PluginConfiguration newParam =
-            new PluginConfiguration();
-        newParam.setName(name);
-        newParam.setMsg((description != null) ? description : "");
-        newParam.setType(type);
-        newParam.setValue(value);
-        Plugin p = Plugin.getPluginByHashcode(hashcode);
-        newParam.setPlugin(p);
-        return p.getConfigurations().add(newParam);
-    }
-
-    /**
-     * Checks if the string-based value is compatible with the given type
-     *
-     * @param type based on the specified ConfigurationTypes
-     * @param value a string-based value, which should be compatible with <code>type</code>.
-     * @throws IllegalArgumentException the value is not compatible
-     */
-    private void checkConfigValue(ConfigurationType type, String value) throws IllegalArgumentException {
-        try {
-            // Creative NullPointerException-checks
-            value.hashCode();
-            type.hashCode();
-            // Given the value check if it is compatible with the given type
-            switch (type) {
-                case BOOLEAN:
-                    if ((!value.equals("true"))
-                            && (!value.equals("false"))) {
-                        throw new Exception("Not a valid boolean value!");
-                    }
-                    break;
-                case INTEGER:
-                    Integer.valueOf(value);
-                    break;
-                case DOUBLE:
-                    Double.valueOf(value);
-                    break;
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(value + " is not a valid " + type + " value!", e);
-        }
-    }
+    public boolean addConfigEntry(String name, String description, String type, String value) throws IllegalArgumentException;
 
     /**
      * Removes an existing configuration property of this metric plug-in by
@@ -344,31 +118,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @throws Exception upon invalid property's type or name.
      */
-    public boolean removeConfigEntry(
-            DBService db,
-            String name,
-            String type)
-    throws IllegalArgumentException {
-        // Check for an invalid name
-        if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
-        }
-
-        // Check for invalid type
-        ConfigurationType.valueOf(type);
-
-        // Get the property's Id
-        Long propId = getConfPropId(name, type);
-        if (propId != null) {
-            // Remove the specified configuration property
-            PluginConfiguration prop = db.findObjectById(
-                    PluginConfiguration.class, propId);
-
-            return ((prop != null) && (db.deleteRecord(prop)));
-        }
-
-        return false;
-}
+    public boolean removeConfigEntry(String name, String type) throws IllegalArgumentException;
 
     /**
      * Sets the metrics name. In practice the <code>metricName</code>
@@ -377,9 +127,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @param metricName - the metric name
      */
-    public void setPluginName(String metricName) {
-        this.pluginName = metricName;
-    }
+    public void setPluginName(String metricName);
 
     /**
      * Returns the metric name stored in this <code>MetricInfo</code>
@@ -387,9 +135,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @return Metric name.
      */
-    public String getPluginName() {
-        return pluginName;
-    }
+    public String getPluginName();
 
     /**
      * Sets the metrics version. In practice the <code>metricVersion</code>
@@ -398,9 +144,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @param metricVersion - a metric version
      */
-    public void setPluginVersion(String metricVersion) {
-        this.pluginVersion = metricVersion;
-    }
+    public void setPluginVersion(String metricVersion);
 
     /**
      * Returns the metric version stored in this <code>MetricInfo</code>
@@ -408,59 +152,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @return Metric version.
      */
-    public String getPluginVersion() {
-        return pluginVersion;
-    }
-
-    /**
-     * Sets the list of supported activation interfaces (types). In practice
-     * the given list must contain the same entries like those supported by
-     * the associated metric plug-in.<br/>
-     * <br/>
-     * Note: Any previous entries in this list will be deleted by this action.
-     *
-     * @param l - the list of supported activation interfaces
-     */
-    public void setActivationTypes(Set<Class<? extends DAObject>> l) {
-        this.activationTypes = l;
-    }
-
-    /**
-     * Returns the list off all activation interfaces (types) supported by the
-     * associated metric plug-in.
-     *
-     * @return - the list of supported activation interfaces
-     */
-    public Set<Class<? extends DAObject>> getActivationTypes() {
-        return this.activationTypes;
-    }
-
-    /**
-     * Adds one or more additional activation interfaces (types) to the
-     * locally stored list of supported activation interfaces.
-     *
-     * @param activator - the list of additional activation interfaces
-     */
-    public void addActivationType(Class<? extends DAObject> activator) {
-        this.activationTypes.add(activator);
-    }
-
-    /**
-     * Compares the provided activation interface to the locally stored list
-     * of supported activation interfaces.
-     *
-     * @return <code>true</code> when the given activation interface is found
-     * in the list, or <code>false</code> otherwise.
-     */
-    public boolean isActivationType(Class<? extends DAObject> o) {
-        // Compare the activation list's entries to the given activation
-        // interface, until a match is found
-        for (Class<? extends DAObject> activationType : activationTypes) {
-            if (activationType.equals(o))
-                return true;
-        }
-        return false;
-    }
+    public String getPluginVersion();
 
     /**
      * Initializes the corresponding local field with the reference to the
@@ -468,9 +160,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @param serviceRef - the service reference
      */
-    public void setServiceRef(ServiceReference serviceRef) {
-        this.serviceRef = serviceRef;
-    }
+    public void setServiceRef(ServiceReference serviceRef);
 
     /**
      * Returns the service reference that points to the associated metric
@@ -478,9 +168,7 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @return The service reference.
      */
-    public ServiceReference getServiceRef() {
-        return serviceRef;
-    }
+    public ServiceReference getServiceRef();
 
     /**
      * Sets the hash code's value of this <code>MetricInfo</code> instance.
@@ -491,53 +179,53 @@ public class PluginInfo implements Comparable<PluginInfo> {
      *
      * @param hashcode - the hash code's value of this object
      */
-    public void setHashcode(String hashcode) {
-        this.hashcode = hashcode;
-    }
+    public void setHashcode(String hashcode);
 
     /**
      * Returns the hash code's value of this <code>MetricInfo</code> instance.
      *
      * @return The hash code's value of this object.
      */
-    public String getHashcode() {
-        return hashcode;
-    }
+    public String getHashcode();
+
+    public boolean isInstalled();
+
+    public void setInstalled(boolean isInstalled);
+
+    // ActivationTypes
+    /**
+     * Sets the list of supported activation interfaces (types). In practice
+     * the given list must contain the same entries like those supported by
+     * the associated metric plug-in.<br/>
+     * <br/>
+     * Note: Any previous entries in this list will be deleted by this action.
+     *
+     * @param l - the list of supported activation interfaces
+     */
+    public void setActivationTypes(Set<Class<? extends DAObject>> l);
 
     /**
-     * Creates a text representation of this <code>MetricInfo</code>
-     * instance.
+     * Returns the list off all activation interfaces (types) supported by the
+     * associated metric plug-in.
      *
-     * @return The text representation of this object.
+     * @return - the list of supported activation interfaces
      */
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        // Add the metric plug-in's name
-        b.append(displayIfNotEmpty(getPluginName(), "[UNKNOWN]"));
-        // Add the metric plug-in's version
-        b.append(displayIfNotEmpty(getPluginVersion(), "[UNKNOWN]"));
-        // Add the metric plug-in's class name
-        b.append(" [");
-        if (getServiceRef() != null) {
-            String[] classNames =
-                (String[]) serviceRef.getProperty(Constants.OBJECTCLASS);
-            b.append(displayIfNotEmpty(
-                    StringUtils.join(classNames, ","), "UNKNOWN"));
-        }
-        else {
-            b.append("UNKNOWN");
-        }
-        b.append("]");
-        return b.toString();
-    }
+    public Set<Class<? extends DAObject>> getActivationTypes();
 
-    private String displayIfNotEmpty(String val, String orElse) {
-        return (val != null) && (!val.isEmpty()) ? val : orElse;
-    }
+    /**
+     * Adds one or more additional activation interfaces (types) to the
+     * locally stored list of supported activation interfaces.
+     *
+     * @param activator - the list of additional activation interfaces
+     */
+    public void addActivationType(Class<? extends DAObject> activator);
 
-	public int compareTo(PluginInfo pi) {
-		return hashcode.compareTo(pi.hashcode);
-	}
+    /**
+     * Compares the provided activation interface to the locally stored list
+     * of supported activation interfaces.
+     *
+     * @return <code>true</code> when the given activation interface is found
+     * in the list, or <code>false</code> otherwise.
+     */
+    public boolean isActivationType(Class<? extends DAObject> o);
 }
-
-//vi: ai nosi sw=4 ts=4 expandtab

@@ -1,5 +1,6 @@
 package eu.sqooss.service.abstractmetric;
 
+import eu.sqooss.impl.service.abstractmetric.PluginInfoImpl;
 import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.Plugin;
@@ -38,14 +39,14 @@ public class PluginInfoTest {
 
     @Test
      public void defaultConstructorEmptyConfig() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         assertEquals(0, pi.getConfiguration().size());
     }
 
 
     @Test
     public void constructorWithConfig() {
-        pi = new PluginInfo(setWithOneElement());
+        pi = new PluginInfoImpl(setWithOneElement());
         assertEquals(spc, pi.getConfiguration());
     }
 
@@ -59,7 +60,7 @@ public class PluginInfoTest {
 
     @Test
     public void constructorWithConfigAndNull() {
-        pi = new PluginInfo(setWithOneElement(), null, null, null);
+        pi = new PluginInfoImpl(setWithOneElement(), null, null, null);
         assertEquals(spc, pi.getConfiguration());
     }
 
@@ -89,7 +90,7 @@ public class PluginInfoTest {
         String version = "1.2.3";
         Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
 
-        pi = new PluginInfo(setWithOneElement(), name, version, activationTypes);
+        pi = new PluginInfoImpl(setWithOneElement(), name, version, activationTypes);
         assertEquals(spc, pi.getConfiguration());
         assertEquals(name, pi.getPluginName());
         assertEquals(version, pi.getPluginVersion());
@@ -99,21 +100,21 @@ public class PluginInfoTest {
 
     @Test
     public void testGetConfPropIdInvalidName() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         assertNull(pi.getConfPropId(null, "type"));
     }
 
 
     @Test
     public void testGetConfPropIdInvalidType() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         assertNull(pi.getConfPropId("name", null));
     }
 
 
     @Test
     public void testGetConfPropIdEmptySet() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         assertNull(pi.getConfPropId("name", "type"));
     }
 
@@ -128,7 +129,7 @@ public class PluginInfoTest {
 
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfo(set);
+        pi = new PluginInfoImpl(set);
 
         assertEquals(id, (long) (pi.getConfPropId("aName", "aType")));
     }
@@ -142,7 +143,7 @@ public class PluginInfoTest {
 
     @Test
     public void testUpdateConfigEntryNotFound() throws Exception {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         assertFalse(pi.updateConfigEntry(null, "aName", null));
     }
 
@@ -158,7 +159,7 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfo(set);
+        pi = new PluginInfoImpl(set);
 
         // Mock DBService and return the mocked PluginConfiguration
         DBService dbservice = mock(DBService.class);
@@ -181,7 +182,7 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfo(set);
+        pi = new PluginInfoImpl(set);
 
         // Mock DBService and return the mocked PluginConfiguration
         DBService dbservice = mock(DBService.class);
@@ -199,7 +200,7 @@ public class PluginInfoTest {
         mockStatic(Plugin.class);
         when(Plugin.getPluginByHashcode(any(String.class))).thenReturn(p);
 
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
 
         assertTrue(pi.addConfigEntry(null, "name", "description", "BOOLEAN", "true"));
     }
@@ -218,7 +219,7 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfo(set);
+        pi = new PluginInfoImpl(set);
 
         assertNull(pi.getConfPropId("someOtherName", "INTEGER"));
     }
@@ -233,7 +234,7 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfo(set);
+        pi = new PluginInfoImpl(set);
 
         assertFalse(pi.updateConfigEntry(null, "aName", null));
         assertNotNull(pi.toString());
@@ -242,7 +243,7 @@ public class PluginInfoTest {
 
     @Test
     public void testAddActivationType() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
         pi.addActivationType(DAObject.class);
 
         assertTrue(pi.isActivationType(DAObject.class));
@@ -250,7 +251,7 @@ public class PluginInfoTest {
 
     @Test
     public void testIsActivationTypeFalse() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl();
 
         assertFalse(pi.isActivationType(DAObject.class));
     }

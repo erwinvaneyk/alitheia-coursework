@@ -230,12 +230,12 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 //            pluginInfo.setServiceRef(srefPlugin);
 //            pluginInfo.setHashcode(getServiceId(srefPlugin).toString());
             PluginInfo pluginInfo =
-                new PluginInfo(sobjPlugin.getConfigurationSchema(), sobjPlugin.getName(),
+                new PluginInfoImpl(sobjDB, sobjPlugin.getConfigurationSchema(), sobjPlugin.getName(),
                         sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(sobjPlugin.getUniqueKey());
             // Mark as not installed
-            pluginInfo.installed = false;
+            pluginInfo.setInstalled(false);
             return pluginInfo;
         }
 
@@ -261,12 +261,12 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
                     "Creating info object for installed plug-in "
                     + sobjPlugin.getName());
             PluginInfo pluginInfo =
-                new PluginInfo(p.getConfigurations(), sobjPlugin.getName(),
+                new PluginInfoImpl(sobjDB, p.getConfigurations(), sobjPlugin.getName(),
                         sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(p.getHashcode());
             // Mark as installed
-            pluginInfo.installed = true;
+            pluginInfo.setInstalled(true);
             return pluginInfo;
         }
 
@@ -528,7 +528,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 
         while (plugins.hasNext()) {
             PluginInfo pi = plugins.next();
-            if ((pi.installed)
+            if ((pi.isInstalled())
                     && (pi.isActivationType(o))
                     && (pi.getServiceRef() != null)) {
                 matching.add(pi);
@@ -578,7 +578,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             return;
         }
         // Check for installed metric plug-in
-        if (pi.installed) {
+        if (pi.isInstalled()) {
             ServiceReference srefPlugin = pi.getServiceRef();
             Plugin pDao = pluginRefToPluginDAO(srefPlugin);
             pi = createInstalledPI(srefPlugin, pDao);
@@ -605,7 +605,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
         while (i.hasNext()) {
             PluginInfo pi = registeredPlugins.get(i.next());
             // Skip metric plug-ins that are registered but not installed
-            if (pi.installed) {
+            if (pi.isInstalled()) {
                 ServiceReference sr = pi.getServiceRef();
                 Plugin p = pluginRefToPluginDAO(sr);
                 Set<Metric> lm = p.getSupportedMetrics();
