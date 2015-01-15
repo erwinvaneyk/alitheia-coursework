@@ -48,7 +48,7 @@ import eu.sqooss.service.db.Metric;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
 import eu.sqooss.service.abstractmetric.PluginInfo;
-import eu.sqooss.service.abstractmetric.PluginInfo.ConfigurationType;
+import eu.sqooss.service.abstractmetric.ConfigurationType;
 import eu.sqooss.service.util.StringUtils;
 
 public class PluginsView extends AbstractView{

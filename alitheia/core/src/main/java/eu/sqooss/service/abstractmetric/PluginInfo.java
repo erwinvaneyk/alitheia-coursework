@@ -18,21 +18,7 @@ import java.util.Set;
  * the service's information are copied into this new <code>PluginInfoImpl</code>
  * instance.
  */
-public interface PluginInfo extends Comparable<PluginInfo>  {
-
-    /**
-     * This enumeration includes all permitted types of configuration values,
-     * that a metrics can support. The various configuration parameters and
-     * their values are used mostly from internal metric processes, like
-     * results rendering and validation.
-     */
-    public enum ConfigurationType {
-        INTEGER,
-        STRING,
-        BOOLEAN,
-        DOUBLE
-    }
-
+public interface PluginInfo extends Comparable<PluginInfo> {
     /**
      * Initializes the configuration set that is available for this plug-in.
      *

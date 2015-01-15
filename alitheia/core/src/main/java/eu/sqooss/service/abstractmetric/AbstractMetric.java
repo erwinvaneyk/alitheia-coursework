@@ -722,7 +722,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      * @param type The type of the configuration property
      */
     protected final void addConfigEntry(String name, String defValue,
-            String msg, PluginInfo.ConfigurationType type) {
+            String msg, ConfigurationType type) {
         // Retrieve the plug-in's info object
         PluginInfo pi = pa.getPluginInfo(getUniqueKey());
         // Will happen if called during bundle's startup
@@ -770,7 +770,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      */
     protected final void removeConfigEntry(
             String name,
-            PluginInfo.ConfigurationType type) {
+            ConfigurationType type) {
         // Retrieve the plug-in's info object
         PluginInfo pi = pa.getPluginInfo(getUniqueKey());
         // Will happen if called during bundle's startup

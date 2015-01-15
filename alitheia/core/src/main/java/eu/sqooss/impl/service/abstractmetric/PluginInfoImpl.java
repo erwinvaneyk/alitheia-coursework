@@ -37,11 +37,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.sqooss.service.abstractmetric.ActivationTypes;
+import eu.sqooss.service.abstractmetric.ConfigurationType;
 import eu.sqooss.service.abstractmetric.PluginInfo;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 
-import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
@@ -231,10 +231,9 @@ public class PluginInfoImpl implements PluginInfo {
         for (PluginConfiguration pc : config) {
             if (pc.getName().equals(name)) {
                 // Retrieve the configuration property's type
-                ConfigurationType type =
-                    ConfigurationType.valueOf(pc.getType());
-                // Check for invalid value/type combinations
-                checkConfigValue(type, newVal);
+                String type = pc.getType();
+                if(!ConfigurationType.valueOf(type).validate(newVal))
+                    throw new IllegalArgumentException(newVal + " is not a valid " + type + " value!");
 
                 // Update the given configuration property
                 pc = db.attachObjectToDBSession(pc);
@@ -270,8 +269,10 @@ public class PluginInfoImpl implements PluginInfo {
         if (name == null) {
             throw new IllegalArgumentException("Invalid name: " + name + "!");
         }
+
         // Check for invalid value/type combinations
-        checkConfigValue(ConfigurationType.valueOf(type), value);
+        if(!ConfigurationType.valueOf(type).validate(value))
+            throw new IllegalArgumentException(value + " is not a valid " + type + " value!");
 
         // Add the new configuration property
         PluginConfiguration newParam =
