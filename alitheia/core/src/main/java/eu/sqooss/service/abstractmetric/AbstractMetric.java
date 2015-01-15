@@ -736,7 +736,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         try {
             // Update property
             if (pi.hasConfProp(name, type.toString())) {
-                if (pi.updateConfigEntry(db, name, defValue)) {
+                if (pi.updateConfigEntry(name, defValue)) {
                     // Update the Plug-in Admin's information
                     pa.pluginUpdated(pa.getPlugin(pi));
                 }
@@ -747,7 +747,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
             // Create property
             else {
                 if (pi.addConfigEntry(
-                        db, name, msg, type.toString(), defValue)) {
+                        name, msg, type.toString(), defValue)) {
                     // Update the Plug-in Admin's information
                     pa.pluginUpdated(pa.getPlugin(pi));
                 }
@@ -783,7 +783,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         // Modify the plug-in's configuration
         try {
             if (pi.hasConfProp(name, type.toString())) {
-                if (pi.removeConfigEntry(db, name, type.toString())) {
+                if (pi.removeConfigEntry(name, type.toString())) {
                     // Update the Plug-in Admin's information
                     pa.pluginUpdated(pa.getPlugin(pi));
                 }

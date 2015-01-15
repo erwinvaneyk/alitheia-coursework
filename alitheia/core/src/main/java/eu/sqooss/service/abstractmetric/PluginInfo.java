@@ -18,7 +18,7 @@ import java.util.Set;
  * the service's information are copied into this new <code>PluginInfoImpl</code>
  * instance.
  */
-public interface PluginInfo {
+public interface PluginInfo extends Comparable<PluginInfo>  {
 
     /**
      * This enumeration includes all permitted types of configuration values,

@@ -59,7 +59,7 @@ import eu.sqooss.service.util.StringUtils;
  * the service's information are copied into this new <code>PluginInfoImpl</code>
  * instance.
  */
-public class PluginInfoImpl implements PluginInfo, Comparable<PluginInfo> {
+public class PluginInfoImpl implements PluginInfo {
 
     /**
      * The service reference of the service that registered this metric

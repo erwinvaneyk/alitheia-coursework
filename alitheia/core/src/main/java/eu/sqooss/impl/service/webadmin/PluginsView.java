@@ -203,7 +203,6 @@ public class PluginsView extends AbstractView{
                                 reqValPropName, reqValPropType)) {
                             try {
                                 if (selPI.removeConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropType)) {
                                     // Update the Plug-in Admin's information
@@ -242,7 +241,6 @@ public class PluginsView extends AbstractView{
                         if (update) {
                             try {
                                 if (selPI.updateConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropValue)) {
                                     // Update the Plug-in Admin's information
@@ -266,7 +264,6 @@ public class PluginsView extends AbstractView{
                         else {
                             try {
                                 if (selPI.addConfigEntry(
-                                        sobjDB,
                                         reqValPropName,
                                         reqValPropDescr,
                                         reqValPropType,
