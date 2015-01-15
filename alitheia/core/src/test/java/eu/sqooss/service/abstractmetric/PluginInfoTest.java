@@ -7,6 +7,7 @@ import eu.sqooss.service.db.PluginConfiguration;
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.osgi.framework.ServiceReference;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -202,6 +203,7 @@ public class PluginInfoTest {
         pi = new PluginInfo();
 
         assertTrue(pi.addConfigEntry(null, "name", "description", "BOOLEAN", "true"));
+        assertFalse(pi.hasConfProp("name", "BOOLEAN"));
     }
 
 
@@ -259,5 +261,28 @@ public class PluginInfoTest {
     @Test(expected = NullPointerException.class)
     public void testCheckConfigValueException() throws Exception {
         pi.addConfigEntry(null, "name", "description", "DOUBLE", null);
+    }
+
+
+    @Test
+    public void testServiceRef() {
+        pi = new PluginInfo();
+
+        ServiceReference serviceRef = mock(ServiceReference.class);
+        pi.setServiceRef(serviceRef);
+        assertEquals(serviceRef, pi.getServiceRef());
+    }
+
+
+    @Test
+    public void testCompareTo() {
+        pi = new PluginInfo();
+
+        PluginInfo pi1 = new PluginInfo();
+        pi1.setHashcode("123");
+        PluginInfo pi2 = new PluginInfo();
+        pi2.setHashcode("456");
+
+        assertTrue(pi1.compareTo(pi2) != 0);
     }
 }
