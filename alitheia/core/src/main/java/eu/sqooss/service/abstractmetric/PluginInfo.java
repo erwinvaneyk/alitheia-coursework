@@ -197,9 +197,9 @@ public interface PluginInfo {
      * <br/>
      * Note: Any previous entries in this list will be deleted by this action.
      *
-     * @param l - the list of supported activation interfaces
+     * @param activationTypes - the list of supported activation interfaces
      */
-    public void setActivationTypes(Set<Class<? extends DAObject>> l);
+    public void setActivationTypes(ActivationTypes activationTypes);
 
     /**
      * Returns the list off all activation interfaces (types) supported by the
@@ -207,22 +207,5 @@ public interface PluginInfo {
      *
      * @return - the list of supported activation interfaces
      */
-    public Set<Class<? extends DAObject>> getActivationTypes();
-
-    /**
-     * Adds one or more additional activation interfaces (types) to the
-     * locally stored list of supported activation interfaces.
-     *
-     * @param activator - the list of additional activation interfaces
-     */
-    public void addActivationType(Class<? extends DAObject> activator);
-
-    /**
-     * Compares the provided activation interface to the locally stored list
-     * of supported activation interfaces.
-     *
-     * @return <code>true</code> when the given activation interface is found
-     * in the list, or <code>false</code> otherwise.
-     */
-    public boolean isActivationType(Class<? extends DAObject> o);
+    public ActivationTypes getActivationTypes();
 }
