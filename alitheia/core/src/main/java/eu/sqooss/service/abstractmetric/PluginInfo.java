@@ -74,7 +74,6 @@ public interface PluginInfo {
      * Sets a new value of existing metric plugins configuration property
      * by creating a new database record.
      *
-     * @param db the DB components object
      * @param name the configuration property's name
      * @param newVal the new value, that should be assigned to the
      *   selected configuration property
@@ -91,7 +90,6 @@ public interface PluginInfo {
      * Adds a new configuration property for this metric plug-in by creating
      * a new database record for it.
      *
-     * @param db the DB components object
      * @param name the configuration property's name
      * @param description the configuration property's description
      * @param type the configuration property's type
@@ -109,7 +107,6 @@ public interface PluginInfo {
      * Removes an existing configuration property of this metric plug-in by
      * deleting its database record.
      *
-     * @param db the DB components object
      * @param name the configuration property's name
      * @param type the configuration property's type
      *

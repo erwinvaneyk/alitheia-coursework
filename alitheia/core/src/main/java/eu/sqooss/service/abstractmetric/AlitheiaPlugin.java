@@ -261,7 +261,7 @@ public interface AlitheiaPlugin {
      *
      * @return A set of DAObject subclasses
      */
-    Set<Class<? extends DAObject>> getActivationTypes();
+    ActivationTypes getActivationTypes();
 
     /**
      * Get the activation type that corresponds to the activation type which 

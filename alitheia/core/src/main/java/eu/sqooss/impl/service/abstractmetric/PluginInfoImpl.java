@@ -36,6 +36,7 @@ package eu.sqooss.impl.service.abstractmetric;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.sqooss.service.abstractmetric.ActivationTypes;
 import eu.sqooss.service.abstractmetric.PluginInfo;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -83,7 +84,7 @@ public class PluginInfoImpl implements PluginInfo, Comparable<PluginInfo> {
      * The list of permitted activation interfaces is described in the
      * {@link eu.sqooss.service.abstractmetric.AlitheiaPlugin} interface and currently includes:
      */
-    private Set<Class<? extends DAObject>> activationTypes = new HashSet<>();
+    private ActivationTypes activationTypes = new ActivationTypes();
 
     /**
      * The hash code's value of the associated metric metric plug-in.
@@ -145,7 +146,7 @@ public class PluginInfoImpl implements PluginInfo, Comparable<PluginInfo> {
      * @param version the version of the plugin
      * @param activationTypes the activationTypes of the plugin
      */
-    public PluginInfoImpl(DBService db, Set<PluginConfiguration> c, String name, String version, Set<Class<? extends DAObject>> activationTypes) {
+    public PluginInfoImpl(DBService db, Set<PluginConfiguration> c, String name, String version, ActivationTypes activationTypes) {
         this.db = db;
         setPluginConfiguration(c);
         setPluginName(name);
@@ -402,10 +403,10 @@ public class PluginInfoImpl implements PluginInfo, Comparable<PluginInfo> {
      * <br/>
      * Note: Any previous entries in this list will be deleted by this action.
      *
-     * @param l - the list of supported activation interfaces
+     * @param activationTypes - the list of supported activation interfaces
      */
-    public void setActivationTypes(Set<Class<? extends DAObject>> l) {
-        this.activationTypes = l;
+    public void setActivationTypes(ActivationTypes activationTypes) {
+        this.activationTypes = activationTypes;
     }
 
     /**
@@ -414,37 +415,9 @@ public class PluginInfoImpl implements PluginInfo, Comparable<PluginInfo> {
      *
      * @return - the list of supported activation interfaces
      */
-    public Set<Class<? extends DAObject>> getActivationTypes() {
+    public ActivationTypes getActivationTypes() {
         return this.activationTypes;
     }
-
-    /**
-     * Adds one or more additional activation interfaces (types) to the
-     * locally stored list of supported activation interfaces.
-     *
-     * @param activator - the list of additional activation interfaces
-     */
-    public void addActivationType(Class<? extends DAObject> activator) {
-        this.activationTypes.add(activator);
-    }
-
-    /**
-     * Compares the provided activation interface to the locally stored list
-     * of supported activation interfaces.
-     *
-     * @return <code>true</code> when the given activation interface is found
-     * in the list, or <code>false</code> otherwise.
-     */
-    public boolean isActivationType(Class<? extends DAObject> o) {
-        // Compare the activation list's entries to the given activation
-        // interface, until a match is found
-        for (Class<? extends DAObject> activationType : activationTypes) {
-            if (activationType.equals(o))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * Initializes the corresponding local field with the reference to the
      * service, that registered the associated metric plug-in.
