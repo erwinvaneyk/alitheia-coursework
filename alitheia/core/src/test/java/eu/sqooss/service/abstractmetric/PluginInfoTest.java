@@ -6,6 +6,7 @@ import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
 import org.apache.commons.lang.ObjectUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.ServiceReference;
@@ -27,6 +28,12 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class PluginInfoTest {
     private PluginInfo pi;
     private Set<PluginConfiguration> spc;
+    private DBService db;
+
+    @Before
+    public void setDB() {
+        db = mock(DBService.class);
+    }
 
     private Set<PluginConfiguration> setWithOneElement() {
         PluginConfiguration pc = mock(PluginConfiguration.class);
@@ -40,14 +47,14 @@ public class PluginInfoTest {
 
     @Test
      public void defaultConstructorEmptyConfig() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
         assertEquals(0, pi.getConfiguration().size());
     }
 
 
     @Test
     public void constructorWithConfig() {
-        pi = new PluginInfoImpl(setWithOneElement());
+        pi = new PluginInfoImpl(db, setWithOneElement());
         assertEquals(spc, pi.getConfiguration());
     }
 
@@ -61,7 +68,7 @@ public class PluginInfoTest {
 
     @Test
     public void constructorWithConfigAndNull() {
-        pi = new PluginInfoImpl(setWithOneElement(), null, null, null);
+        pi = new PluginInfoImpl(db, setWithOneElement(), null, null, null);
         assertEquals(spc, pi.getConfiguration());
     }
 
@@ -91,7 +98,7 @@ public class PluginInfoTest {
         String version = "1.2.3";
         ActivationTypes activationTypes = new ActivationTypes();
 
-        pi = new PluginInfoImpl(setWithOneElement(), name, version, activationTypes);
+        pi = new PluginInfoImpl(db, setWithOneElement(), name, version, activationTypes);
         assertEquals(spc, pi.getConfiguration());
         assertEquals(name, pi.getPluginName());
         assertEquals(version, pi.getPluginVersion());
@@ -101,21 +108,21 @@ public class PluginInfoTest {
 
     @Test
     public void testGetConfPropIdInvalidName() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
         assertNull(pi.getConfPropId(null, "type"));
     }
 
 
     @Test
     public void testGetConfPropIdInvalidType() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
         assertNull(pi.getConfPropId("name", null));
     }
 
 
     @Test
     public void testGetConfPropIdEmptySet() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
         assertNull(pi.getConfPropId("name", "type"));
     }
 
@@ -130,7 +137,7 @@ public class PluginInfoTest {
 
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfoImpl(set);
+        pi = new PluginInfoImpl(db, set);
 
         assertEquals(id, (long) (pi.getConfPropId("aName", "aType")));
     }
@@ -138,14 +145,14 @@ public class PluginInfoTest {
 
     @Test(expected=Exception.class)
     public void testUpdateConfigEntryException() throws Exception {
-        pi.updateConfigEntry(null, null, null);
+        pi.updateConfigEntry(null, null);
     }
 
 
     @Test
     public void testUpdateConfigEntryNotFound() throws Exception {
-        pi = new PluginInfoImpl();
-        assertFalse(pi.updateConfigEntry(null, "aName", null));
+        pi = new PluginInfoImpl(db);
+        assertFalse(pi.updateConfigEntry("aName", null));
     }
 
 
@@ -160,13 +167,12 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfoImpl(set);
+        pi = new PluginInfoImpl(db, set);
 
         // Mock DBService and return the mocked PluginConfiguration
-        DBService dbservice = mock(DBService.class);
-        when(dbservice.attachObjectToDBSession(any(PluginConfiguration.class))).thenReturn(pc);
+        when(db.attachObjectToDBSession(any(PluginConfiguration.class))).thenReturn(pc);
 
-        assertTrue(pi.updateConfigEntry(dbservice, "aName", "42"));
+        assertTrue(pi.updateConfigEntry("aName", "42"));
         verify(pc).setValue("42");
     }
 
@@ -183,14 +189,13 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfoImpl(set);
+        pi = new PluginInfoImpl(db, set);
 
         // Mock DBService and return the mocked PluginConfiguration
-        DBService dbservice = mock(DBService.class);
-        when(dbservice.findObjectById(PluginConfiguration.class, id)).thenReturn(pc);
-        when(dbservice.deleteRecord(pc)).thenReturn(true);
+        when(db.findObjectById(PluginConfiguration.class, id)).thenReturn(pc);
+        when(db.deleteRecord(pc)).thenReturn(true);
 
-        assertTrue(pi.removeConfigEntry(dbservice, "aName", "INTEGER"));
+        assertTrue(pi.removeConfigEntry("aName", "INTEGER"));
     }
 
 
@@ -201,9 +206,9 @@ public class PluginInfoTest {
         mockStatic(Plugin.class);
         when(Plugin.getPluginByHashcode(any(String.class))).thenReturn(p);
 
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
 
-        assertTrue(pi.addConfigEntry(null, "name", "description", "BOOLEAN", "true"));
+        assertTrue(pi.addConfigEntry("name", "description", "BOOLEAN", "true"));
         assertFalse(pi.hasConfProp("name", "BOOLEAN"));
     }
 
@@ -221,7 +226,7 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfoImpl(set);
+        pi = new PluginInfoImpl(db, set);
 
         assertNull(pi.getConfPropId("someOtherName", "INTEGER"));
     }
@@ -236,16 +241,16 @@ public class PluginInfoTest {
         // Create PluginInfo with this PluginConfiguration
         Set<PluginConfiguration> set = new HashSet<>();
         set.add(pc);
-        pi = new PluginInfoImpl(set);
+        pi = new PluginInfoImpl(db, set);
 
-        assertFalse(pi.updateConfigEntry(null, "aName", null));
+        assertFalse(pi.updateConfigEntry("aName", null));
         assertNotNull(pi.toString());
     }
 
 
     @Test
     public void testAddActivationType() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
         pi.getActivationTypes().add(DAObject.class);
 
         assertTrue(pi.getActivationTypes().contains(DAObject.class));
@@ -253,7 +258,7 @@ public class PluginInfoTest {
 
     @Test
     public void testIsActivationTypeFalse() {
-        pi = new PluginInfoImpl();
+        pi = new PluginInfoImpl(db);
 
         assertFalse(pi.getActivationTypes().contains(DAObject.class));
     }
@@ -261,13 +266,13 @@ public class PluginInfoTest {
 
     @Test(expected = NullPointerException.class)
     public void testCheckConfigValueException() throws Exception {
-        pi.addConfigEntry(null, "name", "description", "DOUBLE", null);
+        pi.addConfigEntry("name", "description", "DOUBLE", null);
     }
 
 
     @Test
     public void testServiceRef() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl(db);
 
         ServiceReference serviceRef = mock(ServiceReference.class);
         pi.setServiceRef(serviceRef);
@@ -277,11 +282,11 @@ public class PluginInfoTest {
 
     @Test
     public void testCompareTo() {
-        pi = new PluginInfo();
+        pi = new PluginInfoImpl(db);
 
-        PluginInfo pi1 = new PluginInfo();
+        PluginInfo pi1 = new PluginInfoImpl(db);
         pi1.setHashcode("123");
-        PluginInfo pi2 = new PluginInfo();
+        PluginInfo pi2 = new PluginInfoImpl(db);
         pi2.setHashcode("456");
 
         assertTrue(pi1.compareTo(pi2) != 0);
