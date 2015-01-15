@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -90,7 +91,6 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     // Required SQO-OSS components
     private Logger logger;
     private DBService sobjDB = null;
-    private AlitheiaCore sobjCore = null;
     
     /**
      * Keeps a list of registered metric plug-in's services, indexed by the
@@ -109,15 +109,11 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
      * @return The service Id.
      */
     private Long getServiceId (ServiceReference sref) {
-        // Check for a valid service reference
-        if (sref == null) {
-            logger.error(INVALID_SREF);
-            return null;
-        }
         try {
             return (Long) sref.getProperty(Constants.SERVICE_ID);
         }
-        catch (ClassCastException e) {
+        catch (NullPointerException | ClassCastException e) {
+            logger.error(INVALID_SREF);
             return null;
         }
     }
@@ -679,7 +675,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 	    logger.info("Starting the PluginAdmin component.");
 
         // Get the AlitheiaCore's object
-        sobjCore = AlitheiaCore.getInstance();
+        AlitheiaCore sobjCore = AlitheiaCore.getInstance();
 
         if (sobjCore != null) {
             // Obtain the required core components
