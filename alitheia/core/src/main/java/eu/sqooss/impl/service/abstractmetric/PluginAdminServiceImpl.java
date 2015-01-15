@@ -94,10 +94,10 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     
     /**
      * Keeps a list of registered metric plug-in's services, indexed by the
-     * plugin's hash code (stored in the database).
+     * plugins hash code (stored in the database).
      */
-    private ConcurrentHashMap<String, PluginInfo> registeredPlugins =
-        new ConcurrentHashMap<String, PluginInfo>();
+    private final ConcurrentHashMap<String, PluginInfo> registeredPlugins =
+        new ConcurrentHashMap<>();
 
     public PluginAdminServiceImpl() { }
 
@@ -157,7 +157,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             "(" + Constants.SERVICE_ID +"=" + serviceId + ")";
 
         // Retrieve all services that match the search filter
-        ServiceReference[] matchingServices = null;
+        ServiceReference[] matchingServices;
         try {
             /* Since the service search is performed using a service Id,
              * it MUST return only one service reference.
@@ -366,7 +366,6 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             logger.error(
                     "During plug-in service unregistration - "
                     + " a matching PluginInfo object was not found!");
-            return;
         }
         else {
             // Remove the info object from the info object's list
@@ -403,17 +402,20 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
         
         // Find out what happened to the service
         switch (event.getType()) {
-        // New service was registered
-        case ServiceEvent.REGISTERED:
-            pluginRegistered(affectedService);
-            break;
-        // An existing service is unregistering
-        case ServiceEvent.UNREGISTERING:
-            pluginUnregistering(affectedService);
-            break;
-        // The configuration of an existing service was modified
-        case ServiceEvent.MODIFIED:
-            pluginModified(affectedService);
+            // New service was registered
+            case ServiceEvent.REGISTERED:
+                pluginRegistered(affectedService);
+                break;
+            // An existing service is unregistering
+            case ServiceEvent.UNREGISTERING:
+                pluginUnregistering(affectedService);
+                break;
+            // The configuration of an existing service was modified
+            case ServiceEvent.MODIFIED:
+                pluginModified(affectedService);
+                break;
+            default:
+                logger.warn("Unknown ServiceEvent: " + event.getType());
         }
 
         // Close the DB session
@@ -434,10 +436,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
      */
     public boolean installPlugin(String hash) {
         Long sid = getServiceId(hash);
-        if (sid != null) {
-            return installPlugin (sid);
-        }
-        return false;
+        return (sid != null) && installPlugin(sid);
     }
 
     /* (non-Javadoc)
@@ -447,7 +446,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
         logger.info (
                 "Installing plugin with service ID " + serviceID);
 
-        // Pre-formated error messages
+        // Pre-formatted error messages
         final String INSTALL_FAILED =
             "The installation of plugin with"
             + " service ID "+ serviceID
@@ -496,10 +495,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
      */
     public boolean uninstallPlugin(String hash) {
         Long sid = getServiceId(hash);
-        if (sid != null) {
-            return uninstallPlugin (sid);
-        }
-        return false;
+        return  (sid != null) && uninstallPlugin (sid);
     }
 
     /* (non-Javadoc)
@@ -524,7 +520,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     public <T extends DAObject> List<PluginInfo> listPluginProviders(Class<T> o) {
 
         Iterator<PluginInfo> plugins = registeredPlugins.values().iterator();
-        ArrayList<PluginInfo> matching = new ArrayList<PluginInfo>();
+        ArrayList<PluginInfo> matching = new ArrayList<>();
 
         while (plugins.hasNext()) {
             PluginInfo pi = plugins.next();
@@ -538,13 +534,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public PluginInfo getPluginInfo(AlitheiaPlugin m) {
-        PluginInfo mi = null;
-        Collection<PluginInfo> c = listPlugins();
-        Iterator<PluginInfo> i = c.iterator();
-
-        while (i.hasNext()) {
-            mi = i.next();
-
+        for (PluginInfo mi : listPlugins()) {
             if (mi.getPluginName().equals(m.getName())
                     && mi.getPluginVersion().equals(m.getVersion())) {
                 return mi;
@@ -585,7 +575,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             if (pi != null) {
                 registeredPlugins.put(pi.getHashcode(), pi);
                 logger.info("Plug-in (" + pi.getPluginName()
-                        + ") successfuly updated");
+                        + ") successfully updated");
                 // TODO: Not sure, if this is the correct plug-in method
                 //       to call upon configuration update, but it is the
                 //       only one which performs something in that scope.
@@ -600,10 +590,8 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public AlitheiaPlugin getImplementingPlugin(String mnemonic) {
-        Iterator<String> i = registeredPlugins.keySet().iterator();
-
-        while (i.hasNext()) {
-            PluginInfo pi = registeredPlugins.get(i.next());
+        for (String i : registeredPlugins.keySet()) {
+            PluginInfo pi = registeredPlugins.get(i);
             // Skip metric plug-ins that are registered but not installed
             if (pi.isInstalled()) {
                 ServiceReference sr = pi.getServiceRef();
@@ -622,7 +610,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     
     private class PluginUninstallJob extends Job {
 
-        private Long serviceID;
+        private final Long serviceID;
         
         public PluginUninstallJob(Long serviceID) {
             this.serviceID = serviceID;
@@ -630,17 +618,15 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
         
         @Override
         public long priority() {
-            // TODO Auto-generated method stub
             return 0x3;
         }
 
         @Override
         protected void run() throws Exception {
-            // TODO Auto-generated method stub
             logger.info (
                     "Uninstalling plugin with service ID " + serviceID);
 
-            // Pre-formated error messages
+            // Pre-formatted error messages
             final String UNINSTALL_FAILED =
                 "The uninstallation of plugin with"
                 + " service ID "+ serviceID
@@ -659,7 +645,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
                 }
                 // Execute the remove() method of this metric plug-in,
                 // and update the plug-in's information object upon success.
-                if (sobjPlugin.remove()) {
+                else if (sobjPlugin.remove()) {
                     // Release the stored configuration DAOs
                     getPluginInfo(sobjPlugin).setPluginConfiguration(
                             new HashSet<PluginConfiguration>());
@@ -717,9 +703,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 	}
 
 	@Override
-	public void shutDown() {
-		return ;
-	}
+	public void shutDown() {}
 
 	@Override
 	public void setInitParams(BundleContext bc, Logger l) {
