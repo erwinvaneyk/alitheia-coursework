@@ -250,7 +250,53 @@ public class PluginAdminServiceImplTest {
 
 
     @Test
-    public void testServiceChanged() throws Exception {
+    public void testServiceChangedFound() throws Exception {
+        ServiceReference[] srs = new ServiceReference[1];
+        ServiceReference sr = mock(ServiceReference.class);
+        srs[0] = sr;
+
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+        when(ap.install()).thenReturn(true);
+        when(ap.getUniqueKey()).thenReturn("42");
+
+        BundleContext bc = mock(BundleContext.class);
+        doNothing().when(bc).addServiceListener(any(ServiceListener.class), anyString());
+        when(bc.getService(any(ServiceReference.class))).thenReturn(ap);
+        when(bc.getServiceReferences(anyString(), anyString())).thenReturn(srs);
+
+        AlitheiaCore ac = mock(AlitheiaCore.class);
+        DBService db = mock(DBService.class);
+        when(db.startDBSession()).thenReturn(true);
+        when(db.commitDBSession()).thenReturn(true);
+        when(ac.getDBService()).thenReturn(db);
+        mockStatic(AlitheiaCore.class);
+        when(AlitheiaCore.getInstance()).thenReturn(ac);
+
+        Logger logger = mock(Logger.class);
+        pa.setInitParams(bc, logger);
+
+        // Init 'sobjDB'
+        pa.startUp();
+
+        Plugin p = mock(Plugin.class);
+        when(p.getHashcode()).thenReturn("hash321!");
+        mockStatic(Plugin.class);
+        when(Plugin.getPluginByHashcode(any(String.class))).thenReturn(p);
+
+        pa.installPlugin(123l);
+        System.err.println(pa.registeredPlugins);
+
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.MODIFIED_ENDMATCH, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.MODIFIED, sr));
+
+        pa.pluginUpdated(ap);
+    }
+
+
+    @Test
+    public void testServiceChangedNotFound() throws Exception {
         // vv   same as 'testStartUp'
         BundleContext bc = mock(BundleContext.class);
         doNothing().when(bc).addServiceListener(any(ServiceListener.class), anyString());
