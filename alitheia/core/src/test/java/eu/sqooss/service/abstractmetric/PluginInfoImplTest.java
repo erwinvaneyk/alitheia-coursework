@@ -5,7 +5,6 @@ import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.Plugin;
 import eu.sqooss.service.db.PluginConfiguration;
-import org.apache.commons.lang.ObjectUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +24,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Plugin.class)
-public class PluginInfoTest {
+public class PluginInfoImplTest {
     private PluginInfo pi;
     private Set<PluginConfiguration> spc;
     private DBService db;
