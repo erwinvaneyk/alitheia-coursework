@@ -2,6 +2,8 @@ package eu.sqooss.service.abstractmetric;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.impl.service.abstractmetric.PluginAdminServiceImpl;
+import eu.sqooss.impl.service.abstractmetric.PluginInfoImpl;
+import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.logging.Logger;
 import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
@@ -14,8 +16,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import eu.sqooss.service.db.Plugin;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.*;
+
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -46,6 +49,12 @@ public class PluginAdminServiceImplTest {
         String hash = null;
 
         assertFalse(pa.uninstallPlugin(hash));
+    }
+
+
+    @Test
+    public void testListPluginProvidersEmpty() {
+        assertEquals(0, pa.listPluginProviders(DAObject.class).size());
     }
 
 
@@ -89,6 +98,8 @@ public class PluginAdminServiceImplTest {
         pa.setInitParams(bc, logger);
 
         assertTrue(pa.installPlugin(serviceId));
+        assertEquals(1, pa.listPlugins().size());
+        assertEquals(0, pa.listPluginProviders(DAObject.class).size());
     }
 
 
@@ -133,6 +144,85 @@ public class PluginAdminServiceImplTest {
 
         assertFalse(pa.uninstallPlugin(serviceId));
     }
+
+
+    @Test
+    public void testGetPluginInfoEmpty() {
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+        assertNull(pa.getPluginInfo(ap));
+    }
+
+    @Test
+    public void testGetPluginInfoNotFound() {
+        PluginInfo pi = mock(PluginInfo.class);
+        when(pi.getPluginName()).thenReturn("123");
+        when(pi.getPluginVersion()).thenReturn("1.2.3");
+
+        List<PluginInfo> c = new ArrayList<>();
+        c.add(pi);
+
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+        when(ap.getName()).thenReturn("456");
+        when(ap.getVersion()).thenReturn("4.5.6");
+
+        PluginAdminServiceImpl test = mock(PluginAdminServiceImpl.class);
+
+        when(test.listPlugins()).thenReturn(c);
+        assertNull(test.getPluginInfo(ap));
+    }
+
+    @Test
+    public void testGetPluginInfoFound() {
+        PluginInfo pi = new PluginInfoImpl(null);
+        pi.setPluginName("123");
+        pi.setPluginVersion("1.2.3");
+
+        Collection<PluginInfo> c = mock(Collection.class);
+        c.add(pi);
+
+        PluginAdminServiceImpl test = mock(PluginAdminServiceImpl.class);
+        when(test.listPlugins()).thenReturn(c);
+
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+        when(ap.getName()).thenReturn("123");
+        when(ap.getVersion()).thenReturn("1.2.3");
+
+        // TODO fix
+        assertEquals(null, test.getPluginInfo(ap));
+    }
+
+    @Test
+    public void testGetPluginInfo() {
+        String hash = "123";
+        assertNull(pa.getPluginInfo(hash));
+    }
+
+
+    @Test
+    public void testGetPluginNull() {
+        assertNull(pa.getPlugin(null));
+    }
+
+
+    @Test
+    public void testGetPluginObject() {
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+        BundleContext bc = mock(BundleContext.class);
+        when(bc.getService(any(ServiceReference.class))).thenReturn(ap);
+
+        ServiceReference sr = mock(ServiceReference.class);
+        PluginInfo pi = mock(PluginInfo.class);
+        when(pi.getServiceRef()).thenReturn(sr);
+
+        Logger logger = mock(Logger.class);
+        pa.setInitParams(bc, logger);
+
+        assertEquals(ap, pa.getPlugin(pi));
+    }
+
+
+    @Test
+    
 
     /**
      * PluginAdminServiceImpl test = PowerMock.createPartialMock(PluginAdminServiceImpl.class, "getPluginObject");
