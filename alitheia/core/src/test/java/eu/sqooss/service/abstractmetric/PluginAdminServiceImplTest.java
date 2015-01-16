@@ -4,6 +4,7 @@ import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.impl.service.abstractmetric.PluginAdminServiceImpl;
 import eu.sqooss.impl.service.abstractmetric.PluginInfoImpl;
 import eu.sqooss.service.db.DAObject;
+import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.logging.Logger;
 import eu.sqooss.service.scheduler.Job;
 import eu.sqooss.service.scheduler.Scheduler;
@@ -20,9 +21,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
@@ -219,7 +218,64 @@ public class PluginAdminServiceImplTest {
 
         assertEquals(ap, pa.getPlugin(pi));
     }
-    
+
+    @Test
+    public void testPluginUpdated() {
+        AlitheiaPlugin ap = mock(AlitheiaPlugin.class);
+
+        BundleContext bc = mock(BundleContext.class);
+        Logger logger = mock(Logger.class);
+        pa.setInitParams(bc, logger);
+
+        pa.pluginUpdated(ap);
+    }
+
+
+    @Test
+    public void testStartUp() throws Exception {
+        BundleContext bc = mock(BundleContext.class);
+        doNothing().when(bc).addServiceListener(any(ServiceListener.class), anyString());
+
+        AlitheiaCore ac = mock(AlitheiaCore.class);
+        DBService db = mock(DBService.class);
+        when(ac.getDBService()).thenReturn(db);
+        mockStatic(AlitheiaCore.class);
+        when(AlitheiaCore.getInstance()).thenReturn(ac);
+
+        Logger logger = mock(Logger.class);
+        pa.setInitParams(bc, logger);
+
+        assertTrue(pa.startUp());
+    }
+
+
+    @Test
+    public void testServiceChanged() throws Exception {
+        // vv   same as 'testStartUp'
+        BundleContext bc = mock(BundleContext.class);
+        doNothing().when(bc).addServiceListener(any(ServiceListener.class), anyString());
+
+        AlitheiaCore ac = mock(AlitheiaCore.class);
+        DBService db = mock(DBService.class);
+        when(db.startDBSession()).thenReturn(true);
+        when(db.commitDBSession()).thenReturn(true);
+        when(ac.getDBService()).thenReturn(db);
+        mockStatic(AlitheiaCore.class);
+        when(AlitheiaCore.getInstance()).thenReturn(ac);
+
+        Logger logger = mock(Logger.class);
+        pa.setInitParams(bc, logger);
+        // ^^
+
+        // Init 'sobjDB'
+        pa.startUp();
+
+        ServiceReference sr = mock(ServiceReference.class);
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.MODIFIED_ENDMATCH, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, sr));
+        pa.serviceChanged(new ServiceEvent(ServiceEvent.MODIFIED, sr));
+    }
 
     /**
      * PluginAdminServiceImpl test = PowerMock.createPartialMock(PluginAdminServiceImpl.class, "getPluginObject");
