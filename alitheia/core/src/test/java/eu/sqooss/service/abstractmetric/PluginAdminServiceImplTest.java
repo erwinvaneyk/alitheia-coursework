@@ -219,9 +219,6 @@ public class PluginAdminServiceImplTest {
 
         assertEquals(ap, pa.getPlugin(pi));
     }
-
-
-    @Test
     
 
     /**
