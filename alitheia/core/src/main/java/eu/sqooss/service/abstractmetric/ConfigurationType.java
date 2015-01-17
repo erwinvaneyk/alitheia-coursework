@@ -26,7 +26,9 @@ public enum ConfigurationType {
                     break;
 
                 case BOOLEAN:
-                    Boolean.parseBoolean(value);
+                    if(!value.equals("true") && !value.equals("false")) {
+                        throw new Exception("Invalid value");
+                    }
                     break;
 
                 case DOUBLE:
