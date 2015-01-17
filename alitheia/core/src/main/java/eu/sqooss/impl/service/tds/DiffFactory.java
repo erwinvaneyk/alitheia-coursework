@@ -30,9 +30,11 @@
  *
  */
 
-package eu.sqooss.service.tds;
+package eu.sqooss.impl.service.tds;
 
 import eu.sqooss.impl.service.tds.diff.UnifiedDiffParser;
+import eu.sqooss.service.tds.Diff;
+import eu.sqooss.service.tds.Revision;
 
 /**
  * Class that knows how to parse different diff formats.
@@ -58,11 +60,11 @@ public class DiffFactory {
      * @param end
      * @param basePath
      * @param diff
-     * @return A {@link Diff} object if parsing the diff succeded or null if parsing failed.
+     * @return A {@link eu.sqooss.service.tds.Diff} object if parsing the diff succeded or null if parsing failed.
      * 
      * @see {@link http://en.wikipedia.org/wiki/Diff#Unified_format}
      */
-    public Diff doUnifiedDiff(Revision start, Revision end, 
+    public Diff doUnifiedDiff(Revision start, Revision end,
             String basePath, String diff) {
         
         UnifiedDiffParser d = new UnifiedDiffParser(start, end, basePath, diff);

@@ -220,11 +220,6 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             logger.debug(
                     "Creating info object for registered plug-in "
                     + sobjPlugin.getName());
-//            PluginInfo pluginInfo = new PluginInfo();
-//            pluginInfo.setPluginName(sobjPlugin.getName());
-//            pluginInfo.setPluginVersion(sobjPlugin.getVersion());
-//            pluginInfo.setServiceRef(srefPlugin);
-//            pluginInfo.setHashcode(getServiceId(srefPlugin).toString());
             PluginInfo pluginInfo = getPluginInfoInstance(sobjPlugin.getConfigurationSchema(), sobjPlugin);
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(sobjPlugin.getUniqueKey());
