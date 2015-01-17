@@ -504,12 +504,9 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
     }
 
     public <T extends DAObject> List<PluginInfo> listPluginProviders(Class<T> o) {
-
-        Iterator<PluginInfo> plugins = registeredPlugins.values().iterator();
         ArrayList<PluginInfo> matching = new ArrayList<>();
 
-        while (plugins.hasNext()) {
-            PluginInfo pi = plugins.next();
+        for (PluginInfo pi : registeredPlugins.values()) {
             if ((pi.isInstalled())
                     && (pi.getActivationTypes().contains(o))
                     && (pi.getServiceRef() != null)) {

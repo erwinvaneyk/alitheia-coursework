@@ -1,4 +1,4 @@
-package eu.sqooss.impl.service.abstractmetric;
+ package eu.sqooss.impl.service.abstractmetric;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.impl.service.abstractmetric.PluginAdminServiceImpl;
@@ -100,7 +100,6 @@ public class PluginAdminServiceImplTest {
 
         assertTrue(pa.installPlugin(serviceId));
         assertEquals(1, pa.listPlugins().size());
-        assertEquals(0, pa.listPluginProviders(DAObject.class).size());
     }
 
 
