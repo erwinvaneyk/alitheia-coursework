@@ -286,7 +286,6 @@ public class PluginAdminServiceImplTest {
         when(Plugin.getPluginByHashcode(any(String.class))).thenReturn(p);
 
         pa.installPlugin(123l);
-        System.err.println(pa.registeredPlugins);
 
         pa.serviceChanged(new ServiceEvent(ServiceEvent.MODIFIED_ENDMATCH, sr));
         pa.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sr));
