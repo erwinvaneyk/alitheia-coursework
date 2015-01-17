@@ -46,6 +46,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import eu.sqooss.service.abstractmetric.*;
 import org.osgi.framework.BundleContext;
 
 import eu.sqooss.core.AlitheiaCore;
@@ -53,12 +54,8 @@ import eu.sqooss.metrics.contrib.ContributionActions.ActionCategory;
 import eu.sqooss.metrics.contrib.ContributionActions.ActionType;
 import eu.sqooss.metrics.contrib.db.ContribAction;
 import eu.sqooss.metrics.contrib.db.ContribActionType;
-import eu.sqooss.service.abstractmetric.AbstractMetric;
-import eu.sqooss.service.abstractmetric.AlitheiaPlugin;
-import eu.sqooss.service.abstractmetric.AlreadyProcessingException;
 import eu.sqooss.service.abstractmetric.annotations.MetricDecl;
 import eu.sqooss.service.abstractmetric.annotations.MetricDeclarations;
-import eu.sqooss.service.abstractmetric.MetricMismatchException;
 import eu.sqooss.service.abstractmetric.annotations.Result;
 import eu.sqooss.service.abstractmetric.annotations.Result.ResultType;
 import eu.sqooss.service.db.Bug;
@@ -78,8 +75,6 @@ import eu.sqooss.service.db.ProjectVersion;
 import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.db.MetricType.Type;
 import eu.sqooss.service.fds.FileTypeMatcher;
-import eu.sqooss.service.abstractmetric.MetricActivationException;
-import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.tds.Diff;
 import eu.sqooss.service.tds.DiffChunk;
 import eu.sqooss.service.tds.SCMAccessor;
@@ -109,7 +104,7 @@ public class ContributionMetricImpl extends AbstractMetric {
                  "5" , 
                  "Number of committed files above which the developer is " +
                  "penalized", 
-                 PluginInfo.ConfigurationType.INTEGER);
+                 ConfigurationType.INTEGER);
          }
          return result;
     }
