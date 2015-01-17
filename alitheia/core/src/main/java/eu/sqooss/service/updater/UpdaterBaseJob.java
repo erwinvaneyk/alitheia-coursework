@@ -34,7 +34,6 @@
 package eu.sqooss.service.updater;
 
 import eu.sqooss.core.AlitheiaCore;
-import eu.sqooss.impl.service.updater.UpdaterServiceImpl;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.logging.Logger;
@@ -52,7 +51,7 @@ public abstract class UpdaterBaseJob extends Job {
     protected Logger logger;
     protected DBService dbs;
     protected StoredProject project;
-    protected UpdaterServiceImpl updater;
+    protected UpdaterService updater;
     
     public void setUpdateParams(StoredProject sp, Logger l) {
         this.project = sp;
