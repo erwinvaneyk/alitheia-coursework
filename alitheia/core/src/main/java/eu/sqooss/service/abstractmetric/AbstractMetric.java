@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,9 +50,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import eu.sqooss.service.abstractmetric.annotations.MetricDecl;
-import eu.sqooss.service.abstractmetric.annotations.MetricDeclarations;
-import eu.sqooss.service.abstractmetric.annotations.Result;
+import eu.sqooss.service.abstractmetric.annotations.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -85,7 +82,7 @@ import eu.sqooss.service.util.Pair;
  * A base class for all metrics. Implements basic functionality such as
  * logging setup and plug-in information retrieval from the OSGi bundle
  * manifest file. Metrics can choose to directly implement
- * the {@link eu.sqooss.abstractmetric.AlitheiaPlugin} interface instead of 
+ * the {@link eu.sqooss.service.abstractmetric.AlitheiaPlugin} interface instead of
  * extending this class.
  */
 public abstract class AbstractMetric implements AlitheiaPlugin {
@@ -256,10 +253,8 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
 				m.setMnemonic(metric.mnemonic());
 				m.setMetricType(new MetricType(MetricType.fromActivator(metric.activators()[0])));
 			
-				List<Class<? extends DAObject>> activs = new ArrayList<Class<? extends DAObject>>();				
-				for (Class<? extends DAObject> o : metric.activators()) {
-					activs.add(o);
-				}
+				List<Class<? extends DAObject>> activs = new ArrayList<Class<? extends DAObject>>();
+                Collections.addAll(activs,metric.activators());
 				
 				metricActType.put(m, activs);
 				
@@ -336,7 +331,6 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      */
      @SuppressWarnings("unchecked")
      public List<Result> getResultIfAlreadyCalculated(DAObject o, List<Metric> l) throws MetricMismatchException {
-        boolean found = false;        
         List<Result> result = new ArrayList<Result>();
         
         for (Metric m : l) {
@@ -354,11 +348,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
             } catch (NoSuchMethodException e) {
                 log.error("No method getResult(" + m.getMetricType().toActivator() + ") for type "
                         + this.getClass().getName());
-            } catch (IllegalArgumentException e) {
-                logErr("getResult", o, e);
-            } catch (IllegalAccessException e) {
-                logErr("getResult", o, e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 logErr("getResult", o, e);
             }
             if (re != null && !re.isEmpty()) {
@@ -371,7 +361,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
 
      private Method findGetResultMethod(Class<?> clazz) 
      throws NoSuchMethodException {
-     Method m = null;
+     Method m;
      
      try {
          m = this.getClass().getMethod("getResult", clazz, Metric.class);                
@@ -403,8 +393,8 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      *      not supported by this metric.
      * @throws AlreadyProcessingException 
      */
-    public List<Result> getResult(DAObject o, List<Metric> l) 
-    throws MetricMismatchException, AlreadyProcessingException, Exception {
+    public List<Result> getResult(DAObject o, List<Metric> l)
+            throws MetricMismatchException, AlreadyProcessingException, InvocationTargetException {
         List<Result> r = getResultIfAlreadyCalculated(o, l);
 
         // the result hasn't been calculated yet. Do so.
@@ -437,7 +427,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         return r;
     }
 
-    private Map<Long,Pair<Object,Integer>> locks = new HashMap<Long,Pair<Object,Integer>>();
+    private final Map<Long,Pair<Object,Integer>> locks = new HashMap<Long,Pair<Object,Integer>>();
     
     private Object lockObject(DAObject o) throws AlreadyProcessingException {
     	synchronized (locks) {
@@ -493,7 +483,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      *                 if the DAO is of a type not supported by this metric.
      */
     public void run(DAObject o) throws MetricMismatchException, 
-        AlreadyProcessingException, Exception {
+        AlreadyProcessingException, InvocationTargetException {
 
         if (!checkDependencies()) {
             log.error("Plug-in dependency check failed");
@@ -503,13 +493,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         try {
             Method m = findRunMethod("run", o.getClass());
             m.invoke(this, o);
-        } catch (SecurityException e) {
-            logErr("run", o, e);
-        } catch (NoSuchMethodException e) {
-            logErr("run", o, e);
-        } catch (IllegalArgumentException e) {
-            logErr("run", o, e);
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException | SecurityException e) {
             logErr("run", o, e);
         } catch (InvocationTargetException e) {
             // Forward exception to metric job exception handler
@@ -518,10 +502,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
             } else {
                 if (e != null && e.getCause() != null) {
                     logErr("run", o, e);
-                    if (e.getCause() != null)
-                        throw new Exception(e.getCause());
-                    else
-                        throw new Exception(e);
+                    throw new InvocationTargetException(e);
                 }
             }
         }
@@ -529,7 +510,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
     
     private Method findRunMethod(String name, Class<?> clazz) 
         throws NoSuchMethodException {
-        Method m = null;
+        Method m;
         
         try {
             m = this.getClass().getMethod(name, clazz);                
@@ -658,8 +639,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
 
     /**{@inheritDoc}}*/
     public boolean update() {
-        ServiceReference serviceRef = null;
-        serviceRef = bc.getServiceReference(AlitheiaCore.class.getName());
+        ServiceReference serviceRef = bc.getServiceReference(AlitheiaCore.class.getName());
 
         MetricActivator ma =
             ((AlitheiaCore)bc.getService(serviceRef)).getMetricActivator();
@@ -765,7 +745,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
      * Remove an entry from the plug-in's configuration schema
      *
      * @param name The name of the configuration property to remove
-     * @param name The type of the configuration property to remove
+     * @param type The type of the configuration property to remove
      */
     protected final void removeConfigEntry(
             String name,
@@ -812,10 +792,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         Set<PluginConfiguration> conf = 
             pa.getPluginInfo(getUniqueKey()).getConfiguration();
         
-        Iterator<PluginConfiguration> i = conf.iterator();
-        
-        while (i.hasNext()) {
-            PluginConfiguration pc = i.next();
+        for(PluginConfiguration pc : conf) {
             if (pc.getName().equals(config)) {
                 return pc;
             }
@@ -842,10 +819,10 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
     /**
      * Convenience method to get the measurement for a single metric.
      */
-    protected List<Result> getResult(DAObject o, Class<? extends MetricMeasurement> clazz, 
+    protected List<Result> getResult(DAObject o, Class<? extends MetricMeasurement> clazz,
             Metric m, Result.ResultType type) {
         DBService dbs = AlitheiaCore.getInstance().getDBService();
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         
         props.put(resultFieldNames.get(clazz), o);
         props.put("metric", m);
@@ -854,7 +831,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         if (resultat.isEmpty())
             return Collections.EMPTY_LIST;
         
-        ArrayList<Result> result = new ArrayList<Result>();
+        ArrayList<Result> result = new ArrayList<>();
         result.add(new Result(o, m, ((MetricMeasurement)resultat.get(0)).getResult(), type));
         return result;
         
@@ -900,7 +877,7 @@ public abstract class AbstractMetric implements AlitheiaPlugin {
         params.put("metric", m.getId());
 
     	String q = null;
-    	
+
     	for (Class<? extends DAObject> at : getMetricActivationTypes(m)) {
     	
 	    	if (MetricType.fromActivator(at) == Type.PROJECT_VERSION) {
