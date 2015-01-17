@@ -12,6 +12,12 @@ public enum ConfigurationType {
     BOOLEAN,
     DOUBLE;
 
+    /**
+     * Validates a string value to the given ConfigurationType.
+     *
+     * @param value the value to be evaluated
+     * @return If the value is of a valid format for the type true will be returned.
+     */
     public boolean validate(String value) {
         if(value == null)
             return false;

@@ -50,14 +50,9 @@ import eu.sqooss.service.util.StringUtils;
 /**
  * This class holds runtime and configuration information about single metric
  * plug-in.
- * <br/>
- * Usually an instance of a <code>PluginInfoImpl</code> is created from the
- * <code>PluginAdmin</code> implementation, just after a new metric plug-in
- * bundle is installed in the OSGi framework, who registers a metric
- * plug-in service. Some of the information provided from the metric
- * plug-in object registered with that OSGi service, as well as part of
- * the service's information are copied into this new <code>PluginInfoImpl</code>
- * instance.
+ *
+ * @see eu.sqooss.service.abstractmetric.PluginInfo
+ *
  */
 public class PluginInfoImpl implements PluginInfo {
 

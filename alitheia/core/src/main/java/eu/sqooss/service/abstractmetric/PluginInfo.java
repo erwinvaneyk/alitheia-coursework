@@ -6,7 +6,7 @@ import org.osgi.framework.ServiceReference;
 import java.util.Set;
 
 /**
- * This class holds runtime and configuration information about single metric
+ * This interface holds runtime and configuration information about single metric
  * plug-in.
  * <br/>
  * Usually an instance of a <code>PluginInfo</code> implementation is created from the
@@ -18,6 +18,7 @@ import java.util.Set;
  * instance.
  */
 public interface PluginInfo extends Comparable<PluginInfo> {
+
     /**
      * Initializes the configuration set that is available for this plug-in.
      *
@@ -170,8 +171,16 @@ public interface PluginInfo extends Comparable<PluginInfo> {
      */
     public String getHashcode();
 
+    /**
+     * Check if the plugin is installed
+     * @return true if plugin is installed. The default is false.
+     */
     public boolean isInstalled();
 
+    /**
+     * Set the value of the installed-flag to a new value.
+     * @param isInstalled the new value of the flag.
+     */
     public void setInstalled(boolean isInstalled);
 
     // ActivationTypes
