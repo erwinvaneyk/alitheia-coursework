@@ -278,6 +278,7 @@ public class PluginInfoImpl implements PluginInfo {
         newParam.setValue(value);
         Plugin p = Plugin.getPluginByHashcode(hashcode);
         newParam.setPlugin(p);
+        db.addRecord(newParam);
         return p.getConfigurations().add(newParam);
     }
 
