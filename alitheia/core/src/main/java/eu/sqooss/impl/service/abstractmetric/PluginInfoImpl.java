@@ -110,7 +110,7 @@ public class PluginInfoImpl implements PluginInfo {
      */
     private boolean installed = false;
 
-    private DBService db;
+    private final DBService db;
 
     /**
      * Empty constructor.
@@ -213,14 +213,14 @@ public class PluginInfoImpl implements PluginInfo {
      * @return <code>true</code> upon successful update, of <code>false</code>
      *   when a corresponding database record does not exist.
      *
-     * @throws Exception upon incorrect value's syntax, or
+     * @throws IllegalArgumentException upon incorrect value's syntax, or
      *   invalid property's type.
      */
     public boolean updateConfigEntry(String name, String newVal)
         throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
+            throw new IllegalArgumentException("Invalid name!");
         }
         // Check if such configuration property exists
         for (PluginConfiguration pc : config) {
@@ -251,7 +251,7 @@ public class PluginInfoImpl implements PluginInfo {
      * @return <code>true</code> upon successful append, of <code>false</code>
      *   when a corresponding database record can not be created.
      *
-     * @throws Exception upon incorrect value's syntax,
+     * @throws IllegalArgumentException upon incorrect value's syntax,
      *   invalid property's type, or invalid property's name.
      */
     public boolean addConfigEntry(
@@ -262,7 +262,7 @@ public class PluginInfoImpl implements PluginInfo {
     throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
+            throw new IllegalArgumentException("Invalid name!");
         }
 
         // Check for invalid value/type combinations
@@ -323,7 +323,7 @@ public class PluginInfoImpl implements PluginInfo {
      * @return <code>true</code> upon successful remove, or <code>false</code>
      *   when a corresponding database record can not be found.
      *
-     * @throws Exception upon invalid property's type or name.
+     * @throws IllegalArgumentException upon invalid property's type or name.
      */
     public boolean removeConfigEntry(
             String name,
@@ -331,7 +331,7 @@ public class PluginInfoImpl implements PluginInfo {
     throws IllegalArgumentException {
         // Check for an invalid name
         if (name == null) {
-            throw new IllegalArgumentException("Invalid name: " + name + "!");
+            throw new IllegalArgumentException("Invalid name!");
         }
 
         // Check for invalid type
@@ -460,7 +460,7 @@ public class PluginInfoImpl implements PluginInfo {
      * {@inheritDoc}
      */
     public boolean isInstalled() {
-        return false;
+        return installed;
     }
 
     /**
