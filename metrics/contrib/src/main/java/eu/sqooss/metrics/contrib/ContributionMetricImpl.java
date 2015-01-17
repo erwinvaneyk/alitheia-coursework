@@ -78,7 +78,7 @@ import eu.sqooss.service.db.ProjectVersion;
 import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.db.MetricType.Type;
 import eu.sqooss.service.fds.FileTypeMatcher;
-import eu.sqooss.service.metricactivator.MetricActivationException;
+import eu.sqooss.service.abstractmetric.MetricActivationException;
 import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.tds.Diff;
 import eu.sqooss.service.tds.DiffChunk;
