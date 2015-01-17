@@ -1,6 +1,5 @@
 package eu.sqooss.service.abstractmetric;
 
-import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.PluginConfiguration;
 import org.osgi.framework.ServiceReference;
 

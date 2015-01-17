@@ -225,9 +225,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 //            pluginInfo.setPluginVersion(sobjPlugin.getVersion());
 //            pluginInfo.setServiceRef(srefPlugin);
 //            pluginInfo.setHashcode(getServiceId(srefPlugin).toString());
-            PluginInfo pluginInfo =
-                new PluginInfoImpl(sobjDB, sobjPlugin.getConfigurationSchema(), sobjPlugin.getName(),
-                        sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
+            PluginInfo pluginInfo = getPluginInfoInstance(sobjPlugin.getConfigurationSchema(), sobjPlugin);
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(sobjPlugin.getUniqueKey());
             // Mark as not installed
@@ -256,9 +254,7 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
             logger.debug(
                     "Creating info object for installed plug-in "
                     + sobjPlugin.getName());
-            PluginInfo pluginInfo =
-                new PluginInfoImpl(sobjDB, p.getConfigurations(), sobjPlugin.getName(),
-                        sobjPlugin.getVersion(), sobjPlugin.getActivationTypes());
+            PluginInfo pluginInfo = getPluginInfoInstance(p.getConfigurations(), sobjPlugin);
             pluginInfo.setServiceRef(srefPlugin);
             pluginInfo.setHashcode(p.getHashcode());
             // Mark as installed
@@ -706,6 +702,14 @@ public class PluginAdminServiceImpl implements PluginAdmin, ServiceListener {
 	    this.bc = bc;
         this.logger = l;
 	}
+
+    private PluginInfo getPluginInfoInstance(Set<PluginConfiguration> pluginConfigurations, AlitheiaPlugin sobjPlugin) {
+        PluginInfo pluginInfo = new PluginInfoImpl(sobjDB, pluginConfigurations);
+        pluginInfo.setPluginName(sobjPlugin.getName());
+        pluginInfo.setPluginVersion(sobjPlugin.getVersion());
+        pluginInfo.setActivationTypes(sobjPlugin.getActivationTypes());
+        return pluginInfo;
+    }
 }
 
 //vi: ai nosi sw=4 ts=4 expandtab
