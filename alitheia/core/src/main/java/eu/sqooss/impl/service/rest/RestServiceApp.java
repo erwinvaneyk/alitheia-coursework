@@ -31,13 +31,11 @@
  *
  */
 
-package eu.sqooss.service.rest;
+package eu.sqooss.impl.service.rest;
 
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
-
-import eu.sqooss.impl.service.rest.RestServiceRegistry;
 
 public class RestServiceApp extends Application {
 
