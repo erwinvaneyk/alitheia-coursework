@@ -1,6 +1,8 @@
-package eu.sqooss.service.abstractmetric;
+package eu.sqooss.impl.service.abstractmetric;
 
 import eu.sqooss.impl.service.abstractmetric.PluginInfoImpl;
+import eu.sqooss.service.abstractmetric.ActivationTypes;
+import eu.sqooss.service.abstractmetric.PluginInfo;
 import eu.sqooss.service.db.DAObject;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.Plugin;
